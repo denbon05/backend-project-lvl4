@@ -48,8 +48,8 @@ const setUpViews = (app) => {
 const setUpStaticAssets = (app) => {
   const pathPublic = isProduction
     ? path.join(__dirname, '..', 'public')
-		: path.join(__dirname, '..', 'dist', 'public');
-	logApp('pathPublic: %o', pathPublic);
+    : path.join(__dirname, '..', 'dist', 'public');
+  logApp('pathPublic: %o', pathPublic);
   app.register(fastifyStatic, {
     root: pathPublic,
     prefix: '/assets/',

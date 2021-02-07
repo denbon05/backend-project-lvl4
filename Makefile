@@ -24,4 +24,7 @@ fix:
 test:
 	npm test
 
+deploy:
+	git push heroku HEAD:master
+
 .PHONY: test start
