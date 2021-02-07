@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+	head
+		title Task-manager
+		script(src=assetPath('main.js'))
+		link(href=assetPath('main.css') rel="stylesheet")
+		meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+	body.d-flex.flex-column.min-vh-100
+		nav.navbar.navbar-expand-lg.navbar-light.bg-light.mb-3
+			a.navbar-brand(href="#")= t('appName')
+			button.navbar-toggler(data-toggle="collapse" data-target="#navbarSupportedContent")
+				span.navbar-toggler-icon
+			.collapse.navbar-collapse
+				ul.navbar-nav.mr-auto
+					li.nav-item
+						a.nav-link(href="#")= t('layouts.application.users')
+				ul.navbar-nav
+					li.nav-item
+						a.nav-link(href="#")= t('layouts.application.signIn')
+					li.nav-item
+						a.nav-link(href="#")= t('layouts.application.signUp')
+		.container.wrapper.flex-grow-1
+
+			h1.my-4
+			block content
+
+		footer
+			.container.my-5.pt-4.border-top
+				a(target="_blank" href="https://ru.hexlet.io") Hexlet
