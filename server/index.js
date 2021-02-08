@@ -28,7 +28,7 @@ const setUpViews = (app) => {
   logApp('devHost: %o', devHost);
   const domain = isDevelopment ? devHost : '';
   const helpers = getHelpers(app);
-  const defaultContext = { ...helpers, assetPath: (filename) => `${domain}/assets/${filename}` };
+	const defaultContext = { ...helpers, assetPath: (filename) => `${domain}/assets/${filename}` };
   app.register(pointOfView, {
     engine: {
       pug: Pug,
@@ -44,9 +44,10 @@ const setUpViews = (app) => {
 };
 
 const setUpStaticAssets = (app) => {
-  const pathPublic = isProduction
-    ? path.join(__dirname, '..', 'public')
-    : path.join(__dirname, '..', 'dist', 'public');
+	const pathPublic = path.join(__dirname, '..', 'dist', 'public');
+  // const pathPublic = isProduction
+  //   ? path.join(__dirname, '..', 'public')
+  //   : path.join(__dirname, '..', 'dist', 'public');
   logApp('pathPublic: %o', pathPublic);
   app.register(fastifyStatic, {
     root: pathPublic,

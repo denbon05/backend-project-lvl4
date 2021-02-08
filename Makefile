@@ -4,13 +4,13 @@ install:
 	npm install
 
 start:
-	DEBUG=task-manager heroku local -f Procfile
+	heroku local -f Procfile
 
 start-backend sb:
-	DEBUG=task-manager npx nodemon --exec npx babel-node server/bin/server.js
+	DEBUG=task-manager DEBUG_COLORS=true npx nodemon --exec npx babel-node server/bin/server.js
 
 start-frontend sf:
-	npm run build && DEBUG=task-manager npx webpack serve
+	DEBUG=task-manager DEBUG_COLORS=true npx webpack serve
 
 build:
 	npm run build
