@@ -17,8 +17,6 @@ import getHelpers from './helpers/index.js';
 
 const logApp = debug('task-manager');
 
-// logApp('webpack.config in server/index.js %O', webpackConfig);
-
 dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
 const isProduction = mode === 'production';
