@@ -4,7 +4,7 @@ install:
 	npm install
 
 start:
-	DEBUG=task-manager heroku local -f Procfile
+	DEBUG=task-manager NODE_ENV=production heroku local -f Procfile
 
 start-backend sb:
 	DEBUG=task-manager DEBUG_COLORS=true npx nodemon --exec npx babel-node server/bin/server.js

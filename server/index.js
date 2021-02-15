@@ -23,9 +23,14 @@ import resources from './locales/index.js';
 
 import addRoutes from './routes/index.js';
 import getHelpers from './helpers/index.js';
+// @ts-ignore
 import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
+
+// heroku pg:psql - connect db
+// heroku pg:credentials:url DATABASE - all info
+// pg_stat_activity - monitoring all activity in db
 
 const logApp = debug('task-manager');
 
@@ -33,6 +38,7 @@ dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
 // const isProduction = mode === 'production';
 const isDevelopment = mode === 'development';
+logApp('Mode app: %o', mode);
 
 const setUpViews = (app) => {
   const { devServer } = webpackConfig;
@@ -40,7 +46,7 @@ const setUpViews = (app) => {
   logApp('devHost: %o', devHost);
   const domain = isDevelopment ? devHost : '';
   const helpers = getHelpers(app);
-	const defaultContext = { ...helpers, assetPath: (filename) => `${domain}/assets/${filename}` };
+  const defaultContext = { ...helpers, assetPath: (filename) => `${domain}/assets/${filename}` };
   app.register(pointOfView, {
     engine: {
       pug: Pug,
@@ -56,7 +62,7 @@ const setUpViews = (app) => {
 };
 
 const setUpStaticAssets = (app) => {
-	const pathPublic = path.join(__dirname, '..', 'dist', 'public');
+  const pathPublic = path.join(__dirname, '..', 'dist', 'public');
   logApp('pathPublic: %o', pathPublic);
   app.register(fastifyStatic, {
     root: pathPublic,
@@ -105,7 +111,7 @@ const registerPlugins = (app) => {
   )(...args));
 
   app.register(fastifyMethodOverride);
-	logApp('knexConfig[mode]: %o', knexConfig[mode]);
+  logApp('knexConfig[mode]: %O', knexConfig[mode]);
   app.register(fastifyObjectionjs, {
     knexConfig: knexConfig[mode],
     models,
@@ -113,9 +119,9 @@ const registerPlugins = (app) => {
 };
 
 const addHooks = (app) => {
-	app.addHook('preHandler', async (req, reply) => {
-		logApp('req.isAuthenticated() %o', req.isAuthenticated());
-    reply.locals = {
+  app.addHook('preHandler', async (req, reply) => {
+    logApp('req.isAuthenticated() %o', req.isAuthenticated());
+    reply.locals = { // eslint-disable-line
       isAuthenticated: () => req.isAuthenticated(),
     };
   });
@@ -126,15 +132,15 @@ export default () => {
     logger: {
       prettyPrint: isDevelopment,
     },
-	});
-	
-	registerPlugins(app);
+  });
+
+  registerPlugins(app);
 
   setupLocalization();
   setUpViews(app);
   setUpStaticAssets(app);
-	addRoutes(app);
-	addHooks(app);
+  addRoutes(app);
+  addHooks(app);
 
   return app;
 };

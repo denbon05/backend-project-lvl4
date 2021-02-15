@@ -22,9 +22,16 @@ module.exports = {
     migrations,
   },
   production: {
-    client: 'sqlite3',
+    client: 'pg',
     connection: {
-      filename: './database.sqlite',
+      user: process.env.USER,
+			password: process.env.DB_PASSWORD,
+			database: process.env.DATABASE,
+			port: 5432,
+			host: 'ec2-54-247-158-179.eu-west-1.compute.amazonaws.com',
+			ssl: {
+				rejectUnauthorized: false,
+			},
     },
     useNullAsDefault: true,
     migrations,

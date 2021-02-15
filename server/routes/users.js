@@ -1,16 +1,20 @@
 // @ts-check
 
 import i18next from 'i18next';
+import debug from 'debug';
+
+const logApp = debug('task-manager');
 
 export default (app) => {
   app
     .get('/users', { name: 'users' }, async (req, reply) => {
-      const users = await app.objection.models.user.query();
+			const users = await app.objection.models.user.query();
+			logApp('users %O', users);
       reply.render('users/index', { users });
       return reply;
     })
     .get('/users/new', { name: 'newUser' }, (req, reply) => {
-      const user = new app.objection.models.user();
+      const user = new app.objection.models.user(); // eslint-disable-line
       reply.render('users/new', { user });
     })
     .post('/users', async (req, reply) => {
