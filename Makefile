@@ -13,7 +13,7 @@ start-frontend sf:
 	DEBUG=task-manager DEBUG_COLORS=true npx webpack serve
 
 build:
-	npm run build
+	npm run heroku-postinstall
 
 lint:
 	npx eslint .
