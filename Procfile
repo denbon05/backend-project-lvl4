@@ -1,2 +1,2 @@
-web: make start-backend
+web: make start-frontend
 frontend: make start-frontend
