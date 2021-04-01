@@ -1,4 +1,8 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/denbon05/backend-project-lvl4/workflows/hexlet-check/badge.svg)](https://github.com/denbon05/backend-project-lvl4/actions)
+[![Maintainability](https://api.codeclimate.com/v1/badges/1f7060b57d451b31aa11/maintainability)](https://codeclimate.com/github/denbon05/backend-project-lvl4/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/1f7060b57d451b31aa11/test_coverage)](https://codeclimate.com/github/denbon05/backend-project-lvl4/test_coverage)
 
-### <a target="_blank" href="https://task-manager-prod.herokuapp.com/">Demonstration</a>
+## <a target="_blank" href="https://task-manager-prod.herokuapp.com/">Follow</a>
+
+### Task manager for multiple users

@@ -4,28 +4,28 @@ install-deps:
 	npm install
 
 start:
-	DEBUG=task-manager heroku local -f Procfile
+	heroku local -f Procfile
 
 start-backend sb:
 	DEBUG=task-manager DEBUG_COLORS=true npx nodemon --exec npx babel-node server/bin/server.js
 
 start-frontend sf:
-	DEBUG=task-manager DEBUG_COLORS=true npx webpack serve
+	npx webpack serve
 
 build:
-	npm run postinstall
+	npm run build
 
-watch-db:
-	watch heroku pg:info
+test:
+	npm test
+
+cover:
+	npm test -- --coverage --coverageProvider=v8
 
 lint:
 	npx eslint .
 
 fix:
 	npx eslint --fix .
-
-test:
-	npm test
 
 deploy:
 	git push heroku HEAD:master

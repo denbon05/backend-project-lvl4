@@ -6,7 +6,7 @@ import path from 'path';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
 import fastifyReverseRoutes from 'fastify-reverse-routes';
-// import fastifyObjectionjs from 'fastify-objectionjs';
+import fastifyObjectionjs from 'fastify-objectionjs';
 import fastifyErrorPage from 'fastify-error-page';
 import fastifySensible from 'fastify-sensible';
 import fastifySecureSession from 'fastify-secure-session';
@@ -24,8 +24,8 @@ import resources from './locales/index.js';
 import addRoutes from './routes/index.js';
 import getHelpers from './helpers/index.js';
 // @ts-ignore
-// import knexConfig from '../knexfile.js';
-// import models from './models/index.js';
+import knexConfig from '../knexfile.js';
+import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 
 // heroku pg:psql - connect db
@@ -62,7 +62,6 @@ const setUpViews = (app) => {
 
 const setUpStaticAssets = (app) => {
   const pathPublic = path.join(__dirname, '..', 'dist', 'public');
-  logApp('pathPublic: %o', pathPublic);
   app.register(fastifyStatic, {
     root: pathPublic,
     prefix: '/assets/',
@@ -74,7 +73,7 @@ const setupLocalization = () => {
     .init({
       lng: 'ru',
       fallbackLng: 'en',
-      debug: isDevelopment,
+      debug: false,
       resources,
     });
 };
@@ -110,20 +109,20 @@ const registerPlugins = (app) => {
   )(...args));
 
   app.register(fastifyMethodOverride);
-//   logApp('knexConfig[mode]: %O', knexConfig[mode]);
-//   app.register(fastifyObjectionjs, {
-//     knexConfig: knexConfig[mode],
-//     models,
-//   });
-// };
+  //   logApp('knexConfig[mode]: %O', knexConfig[mode]);
+  app.register(fastifyObjectionjs, {
+    knexConfig: knexConfig[mode],
+    models,
+  });
+};
 
-// const addHooks = (app) => {
-//   app.addHook('preHandler', async (req, reply) => {
-//     logApp('req.isAuthenticated() %o', req.isAuthenticated());
-//     reply.locals = { // eslint-disable-line
-//       isAuthenticated: () => req.isAuthenticated(),
-//     };
-//   });
+const addHooks = (app) => {
+  app.addHook('preHandler', async (req, reply) => {
+    logApp('req.isAuthenticated() %o', req.isAuthenticated());
+    reply.locals = { // eslint-disable-line
+      isAuthenticated: () => req.isAuthenticated(),
+    };
+  });
 };
 
 export default () => {
@@ -139,7 +138,7 @@ export default () => {
   setUpViews(app);
   setUpStaticAssets(app);
   addRoutes(app);
-  // addHooks(app);
+  addHooks(app);
 
   return app;
 };

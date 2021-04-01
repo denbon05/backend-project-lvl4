@@ -1,12 +1,11 @@
 import i18next from 'i18next';
 import _ from 'lodash';
-import debug from 'debug';
+// import debug from 'debug';
 
-const logApp = debug('task-manager');
+// const logApp = debug('task-manager');
 
 export default (app) => ({
   route(name) {
-    logApp('URN path o%', app.reverse(name));
     return app.reverse(name);
   },
   t(key) {
@@ -14,7 +13,6 @@ export default (app) => ({
   },
   _,
   getAlertClass(type) {
-    logApp('Alert class is o%', type);
     switch (type) {
       // case 'failure':
       //   return 'danger';
