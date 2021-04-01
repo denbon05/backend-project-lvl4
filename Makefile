@@ -1,6 +1,6 @@
-install: install
+install: install-deps
 
-install:
+install-deps:
 	npm install
 
 start:
@@ -14,6 +14,9 @@ start-frontend sf:
 
 build:
 	npm run postinstall
+
+watch-db:
+	watch heroku pg:info
 
 lint:
 	npx eslint .

@@ -35,6 +35,7 @@ export default {
         },
       },
       users: {
+        notAnyUsers: 'Пока еще нету пользователей',
         id: 'ID',
         email: 'Email',
         createdAt: 'Дата создания',
