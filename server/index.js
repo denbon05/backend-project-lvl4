@@ -91,7 +91,7 @@ const registerPlugins = (app) => {
     },
   });
 
-  fastifyPassport.registerUserDeserializer(
+  fastifyPassport.registerUserDeserializer( // ?!
     (user) => app.objection.models.user.query().findById(user.id),
   );
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
@@ -107,9 +107,10 @@ const registerPlugins = (app) => {
     },
   // @ts-ignore
   )(...args));
+  // @ts-ignore
+  app.decorate('identificate', (...args) => (logApp('!!!args %O', args))(...args));
 
   app.register(fastifyMethodOverride);
-  //   logApp('knexConfig[mode]: %O', knexConfig[mode]);
   app.register(fastifyObjectionjs, {
     knexConfig: knexConfig[mode],
     models,
@@ -118,7 +119,7 @@ const registerPlugins = (app) => {
 
 const addHooks = (app) => {
   app.addHook('preHandler', async (req, reply) => {
-    logApp('req.isAuthenticated() %o', req.isAuthenticated());
+    // logApp('req.isAuthenticated() %o', req.isAuthenticated());
     reply.locals = { // eslint-disable-line
       isAuthenticated: () => req.isAuthenticated(),
     };

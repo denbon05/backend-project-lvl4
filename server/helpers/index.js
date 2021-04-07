@@ -5,8 +5,12 @@ import _ from 'lodash';
 // const logApp = debug('task-manager');
 
 export default (app) => ({
-  route(name) {
-    return app.reverse(name);
+  route(name, params) {
+    // if (params) {
+    //   logApp('in route name %O', name);
+    //   logApp('in route params %O', params);
+    // }
+    return app.reverse(name, params);
   },
   t(key) {
     return i18next.t(key);

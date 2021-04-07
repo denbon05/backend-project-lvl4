@@ -11,9 +11,15 @@ block content
           th= t('views.users.id')
           th= t('views.users.email')
           th= t('views.users.createdAt')
+          th
       tbody
         each user in users
           tr
             td= user.id
             td= user.email
             td= formatDate(user.createdAt)
+            td 
+              a(href=route('editUser', { id: user.id }))= t('views.users.manage.edit')
+              form(action=route('deleteUser', { id: user.id }) method='post')
+                input(name='_method' type='hidden' value='delete')
+                input.btn.btn-link(type='submit' value=t('views.users.manage.delete'))

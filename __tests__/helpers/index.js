@@ -14,3 +14,9 @@ export const prepareData = async (app) => {
 
   await knex('users').insert(getFixtureData('users.json')); // * заполняем БД
 };
+
+export const getUserIdByEmail = async (app, email) => {
+  const { knex } = app.objection;
+  const [user] = await knex('users').select().where('email', email);
+  return user.id.toString();
+};

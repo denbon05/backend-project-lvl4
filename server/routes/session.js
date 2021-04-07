@@ -8,10 +8,8 @@ export default (app) => {
       const signInForm = {};
       reply.render('session/new', { signInForm });
     })
-    .post('/session', { name: 'session' }, app.fp.authenticate('form', async (req, reply, err, user) => { // !
-      if (err) {
-        return app.httpErrors.internalServerError(err);
-      }
+    .post('/session', { name: 'session' }, app.fp.authenticate('form', async (req, reply, err, user) => {
+      if (err) return app.httpErrors.internalServerError(err);
       if (!user) {
         const signInForm = req.body.data;
         const errors = {

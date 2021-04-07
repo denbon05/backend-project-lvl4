@@ -7,7 +7,7 @@ mixin formFor(entity = null)
 
 mixin input(entity, propertyName, errors = {})
   - propertyErrors = _.get(errors, propertyName)
-  - classLine = 'form-control' + (_.isEmpty(errors) ? '' : ' is-invalid')
+  - classLine = 'form-control' + (!errors[propertyName] ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   .form-group(class=(errors[propertyName] && 'has-danger'))
     label(

@@ -20,7 +20,6 @@ describe('test session', () => {
     testData = getTestData();
   });
 
-
   it('test sign in / sign out', async () => {
     const response = await app.inject({
       method: 'GET',

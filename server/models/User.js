@@ -21,7 +21,7 @@ export default class User extends unique(Model) {
       properties: {
         id: { type: 'integer' },
         email: { type: 'string', format: 'email' },
-        password: { type: 'string', minLength: 3 },
+        password: { type: 'string', minLength: 3, errorMessage: 'Have be at least 3 characters' },
       },
     };
   }
