@@ -4,6 +4,7 @@ import { Model } from 'objection';
 import objectionUnique from 'objection-unique';
 
 import encrypt from '../lib/secure.js';
+import TaskStatus from './TaskStatus.js';
 
 const unique = objectionUnique({ fields: ['email'] });
 
@@ -33,5 +34,18 @@ export default class User extends unique(Model) {
 
   verifyPassword(password) {
     return encrypt(password) === this.passwordDigest;
+  }
+
+  static get relationMappings() {
+    return {
+      statuses: {
+        relation: Model.HasManyRelation,
+        modelClass: TaskStatus,
+        join: {
+          from: 'user.id',
+          to: 'status.user_id',
+        },
+      },
+    };
   }
 }

@@ -7,6 +7,21 @@
     "existing": {
       "email": "lawrence.kulas87@outlook.com",
       "password": "O6AvLIQL1cbzrre"
+    },
+    "existing2": {
+      "email": "nona_murray@yahoo.com",
+      "passwordDigest": "3c1fd781053afcf86f"
+    }
+  },
+  "statuses": {
+    "new": {
+      "name": "todo"
+    },
+    "exiting": {
+      "name": "in process"
+    },
+    "exiting2": {
+      "name": "finished"
     }
   }
 }

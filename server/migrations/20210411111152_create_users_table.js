@@ -1,7 +1,7 @@
 // @ts-check
 
 exports.up = (knex) => (
-  knex.schema.createTableIfNotExists('users', (table) => {
+  knex.schema.createTable('users', (table) => {
     table.increments('id').primary();
     table.string('email');
     table.string('password_digest');

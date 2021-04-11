@@ -48,52 +48,93 @@ describe('test users CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('manage users', async () => {
-    const { new: newUser } = testData.users;
-    let response = await app.inject({
+  it('create', async () => {
+    const params = testData.users.new;
+    const response = await app.inject({
       method: 'POST',
       url: app.reverse('users'),
       payload: {
-        data: newUser,
+        data: params,
       },
     });
 
     expect(response.statusCode).toBe(302);
     const expected = {
-      ..._.omit(newUser, 'password'),
-      passwordDigest: encrypt(newUser.password),
+      ..._.omit(params, 'password'),
+      passwordDigest: encrypt(params.password),
     };
-    const user = await models.user.query().findOne({ email: newUser.email });
-
+    const user = await models.user.query().findOne({ email: params.email });
     expect(user).toMatchObject(expected);
-    const { existing: exitedUser } = testData.users;
-    await app.inject({ // * Sign in
+  });
+
+  it('create with the same email', async () => {
+    const { existing } = testData.users;
+    const response = await app.inject({
       method: 'POST',
-      url: app.reverse('session'),
+      url: app.reverse('users'),
       payload: {
-        data: newUser,
+        data: existing,
       },
     });
-    const currentUserId = await getUserIdByEmail(app, newUser.email);
-    response = await app.inject({
-      method: 'GET',
-      url: app.reverse('editUser', { id: currentUserId }),
-    });
-
-    expect(response.statusCode).toBe(302);
-    const anotherUserId = await getUserIdByEmail(app, exitedUser.email);
-    response = await app.inject({
-      method: 'GET',
-      url: app.reverse('editUser', { id: anotherUserId }),
-    });
-    expect(response.statusCode).toBe(302); // !
+    expect(response.statusCode).toBe(403);
   });
 
-  afterEach(async () => {
-    await knex.migrate.rollback(); // * после каждого теста откатываем миграции
-  });
+  describe('manage users', () => {
+    const exitedUser = testData.users.existing;
+    const exitedUser2 = testData.users.existing2;
+    let currentUserId;
+    let anotherUserId;
 
-  afterAll(() => {
-    app.close();
+    beforeAll(async () => { // * sign in
+      currentUserId = await getUserIdByEmail(app, exitedUser.email);
+      anotherUserId = await getUserIdByEmail(app, exitedUser2.email);
+      await app.inject({
+        method: 'POST',
+        url: app.reverse('users'),
+        payload: {
+          data: exitedUser,
+        },
+      });
+    });
+
+    it('Permision denied edit user', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: app.reverse('editUser', { id: anotherUserId }),
+      });
+      expect(response.statusCode).toBe(302); // !
+    });
+
+    it('Permision denied delete user', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: app.reverse('deleteUser', { id: anotherUserId }),
+      });
+      expect(response.statusCode).toBe(302); // !
+    });
+
+    it('edit own data', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: app.reverse('editUser', { id: currentUserId }),
+      });
+      expect(response.statusCode).toBe(302);
+    });
+
+    it('delete own account', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: app.reverse('deleteUser', { id: currentUserId }),
+      });
+      expect(response.statusCode).toBe(302);
+    });
+
+    afterEach(async () => {
+      await knex.migrate.rollback(); // * после каждого теста откатываем миграции
+    });
+
+    afterAll(() => {
+      app.close();
+    });
   });
 });

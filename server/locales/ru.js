@@ -22,6 +22,16 @@ export default {
           notAuthErr: 'Вы не можете редактировать или удалять другого пользователя',
         },
       },
+      status: {
+        create: {
+          success: 'Статус успешно создан',
+          error: 'Не удалось создать статус',
+        },
+        update: {
+          error: 'Не удалось изменить статус',
+          success: 'Статус успешно изменён',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
@@ -30,6 +40,7 @@ export default {
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
+        statuses: 'Статусы',
       },
     },
     views: {
@@ -44,14 +55,11 @@ export default {
         id: 'ID',
         email: 'Email',
         createdAt: 'Дата создания',
+        password: 'Пароль',
+        title: 'Изменение пользователя',
         new: {
           submit: 'Сохранить',
           signUp: 'Регистрация',
-        },
-        manage: {
-          title: 'Изменение пользователя',
-          edit: 'Изменить',
-          delete: 'Удалить',
         },
       },
       welcome: {
@@ -60,6 +68,21 @@ export default {
           description: 'Практические курсы по программированию',
           more: 'Узнать Больше',
         },
+      },
+      statuses: {
+        id: 'ID',
+        name: 'Наименование',
+        createdAt: 'Дата создания',
+        titleUpdate: 'Изменение статуса',
+        new: {
+          create: 'Создать статус',
+          title: 'Создание статуса',
+          submit: 'Создать',
+        },
+      },
+      manage: {
+        edit: 'Изменить',
+        delete: 'Удалить',
       },
     },
   },

@@ -1,4 +1,3 @@
-
 extends ../layouts/application.pug
 
 block content
@@ -19,7 +18,5 @@ block content
             td= user.email
             td= formatDate(user.createdAt)
             td 
-              a(href=route('editUser', { id: user.id }))= t('views.users.manage.edit')
-              form(action=route('deleteUser', { id: user.id }) method='post')
-                input(name='_method' type='hidden' value='delete')
-                input.btn.btn-link(type='submit' value=t('views.users.manage.delete'))
+              a(href=route('editUser', { id: user.id }))= t('views.manage.edit')
+              +buttonTo(route('deleteUser', { id: user.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')

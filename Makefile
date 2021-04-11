@@ -7,13 +7,16 @@ start:
 	heroku local -f Procfile
 
 start-backend sb:
-	DEBUG=task-manager DEBUG_COLORS=true npx nodemon --exec npx babel-node server/bin/server.js
+	DEBUG=task-manager:* DEBUG_COLORS=true npx nodemon --exec npx babel-node server/bin/server.js
 
 start-frontend sf:
 	npx webpack serve
 
 build:
 	npm run build
+
+db-migrate:
+	npx knex migrate:latest
 
 test:
 	npm test

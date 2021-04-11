@@ -28,10 +28,6 @@ import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 
-// heroku pg:psql - connect db
-// heroku pg:credentials:url DATABASE - all info
-// pg_stat_activity - monitoring all activity in db
-
 const logApp = debug('task-manager');
 
 dotenv.config();
@@ -107,8 +103,6 @@ const registerPlugins = (app) => {
     },
   // @ts-ignore
   )(...args));
-  // @ts-ignore
-  app.decorate('identificate', (...args) => (logApp('!!!args %O', args))(...args));
 
   app.register(fastifyMethodOverride);
   app.register(fastifyObjectionjs, {
@@ -119,7 +113,6 @@ const registerPlugins = (app) => {
 
 const addHooks = (app) => {
   app.addHook('preHandler', async (req, reply) => {
-    // logApp('req.isAuthenticated() %o', req.isAuthenticated());
     reply.locals = { // eslint-disable-line
       isAuthenticated: () => req.isAuthenticated(),
     };

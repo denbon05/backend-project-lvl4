@@ -1,15 +1,12 @@
 import i18next from 'i18next';
 import _ from 'lodash';
-// import debug from 'debug';
+import debug from 'debug';
 
-// const logApp = debug('task-manager');
+const logHelpers = debug('task-manager:helpers');
 
 export default (app) => ({
   route(name, params) {
-    // if (params) {
-    //   logApp('in route name %O', name);
-    //   logApp('in route params %O', params);
-    // }
+    // logHelpers('route name %O', name);
     return app.reverse(name, params);
   },
   t(key) {
@@ -18,8 +15,6 @@ export default (app) => ({
   _,
   getAlertClass(type) {
     switch (type) {
-      // case 'failure':
-      //   return 'danger';
       case 'error':
         return 'danger';
       case 'success':
@@ -33,5 +28,8 @@ export default (app) => ({
   formatDate(str) {
     const date = new Date(str);
     return date.toLocaleString();
+  },
+  log(value) {
+    return logHelpers(value);
   },
 });

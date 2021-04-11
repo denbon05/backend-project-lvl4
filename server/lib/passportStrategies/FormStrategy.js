@@ -1,5 +1,10 @@
 import _ from 'lodash';
 import { Strategy } from 'fastify-passport';
+import debug from 'debug';
+
+const logApp = debug('task-manager:FormStrategy');
+
+logApp('used');
 
 export default class FormStrategy extends Strategy {
   constructor(name, app) {
@@ -22,14 +27,4 @@ export default class FormStrategy extends Strategy {
 
     return this.fail();
   }
-
-  // async identificate(request) {
-  //   if (!request.isAuthenticated()) return this.fail();
-  //   const manageId = _.get(request, 'params.id', null);
-  //   const currentUserId = _.get(request, 'user.id');
-  //   if (manageId !== currentUserId) return this.fail();
-  //   const { models } = this.app.objection;
-  //   const user = await models.user.query().findById(manageId);
-  //   return this.success(user);
-  // }
 }
