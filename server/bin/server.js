@@ -2,7 +2,7 @@
 import debug from 'debug';
 import getApp from '../index.js';
 
-const logApp = debug('task-manager');
+const logApp = debug('app');
 
 const port = process.env.PORT || 5000;
 const address = '0.0.0.0';

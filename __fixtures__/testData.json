@@ -1,18 +1,25 @@
 {
   "users": {
     "new": {
+      "firstName": "Malika",
+      "secondName": "Hodkiewich",
       "email": "malika_hodkiewicz75@live.com",
       "password": "RLJvaIgPOnX5r03"
     },
     "existing": {
+      "firstName": "Lawrence",
+      "secondName": "Kulas",
       "email": "lawrence.kulas87@outlook.com",
       "password": "O6AvLIQL1cbzrre"
     },
     "existing2": {
+      "firstName": "Nona",
+      "secondName": "Murray",
       "email": "nona_murray@yahoo.com",
       "passwordDigest": "3c1fd781053afcf86f"
     }
   },
+
   "statuses": {
     "new": {
       "name": "todo"
@@ -22,6 +29,20 @@
     },
     "exiting2": {
       "name": "finished"
+    },
+
+    "tasks": {
+      "new": {
+        "name": "refacotr",
+        "description": "refactor something",
+        "status": "todo"
+      },
+      "exiting": {
+        "name": "prepare environment",
+        "description": "deploy environment with specific librares",
+        "status": "finished",
+        "exutor": "Lawrence"
+      }
     }
   }
 }

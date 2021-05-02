@@ -102,7 +102,7 @@ describe('test users CRUD', () => {
         method: 'GET',
         url: app.reverse('editUser', { id: anotherUserId }),
       });
-      expect(response.statusCode).toBe(302); // !
+      expect(response.statusCode).toBe(302);
     });
 
     it('Permision denied delete user', async () => {
@@ -110,7 +110,7 @@ describe('test users CRUD', () => {
         method: 'DELETE',
         url: app.reverse('deleteUser', { id: anotherUserId }),
       });
-      expect(response.statusCode).toBe(302); // !
+      expect(response.statusCode).toBe(302);
     });
 
     it('edit own data', async () => {

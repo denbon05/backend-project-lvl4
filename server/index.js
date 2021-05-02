@@ -13,6 +13,7 @@ import fastifySecureSession from 'fastify-secure-session';
 import fastifyFormbody from 'fastify-formbody';
 import fastifyPassport from 'fastify-passport';
 import fastifyMethodOverride from 'fastify-method-override';
+import fastifyAuth from 'fastify-auth';
 import qs from 'qs';
 import pointOfView from 'point-of-view';
 import Pug from 'pug';
@@ -75,6 +76,7 @@ const setupLocalization = () => {
 };
 
 const registerPlugins = (app) => {
+  app.register(fastifyAuth);
   app.register(fastifySensible);
   app.register(fastifyErrorPage);
   // @ts-ignore
@@ -87,7 +89,7 @@ const registerPlugins = (app) => {
     },
   });
 
-  fastifyPassport.registerUserDeserializer( // ?!
+  fastifyPassport.registerUserDeserializer( // ?
     (user) => app.objection.models.user.query().findById(user.id),
   );
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
@@ -109,6 +111,23 @@ const registerPlugins = (app) => {
     knexConfig: knexConfig[mode],
     models,
   });
+
+  app.decorate('checkIfUserCanEditProfile', (req, reply, done) => {
+    if (req.user?.id === parseInt(req.params.id, 10)) {
+      done();
+    }
+    req.flash('error', i18next.t('flash.users.authError'));
+    reply.redirect('/users');
+    return reply;
+  });
+
+  // app.decorate('checkIfUserCreatedTask', async (req, reply) => {
+  //   const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
+  //   if (req.user.id !== creatorId) {
+  //     req.flash('error', i18next.t('flash.tasks.authError'));
+  //     reply.redirect('/tasks');
+  //   }
+  // });
 };
 
 const addHooks = (app) => {
@@ -131,8 +150,10 @@ export default () => {
   setupLocalization();
   setUpViews(app);
   setUpStaticAssets(app);
-  addRoutes(app);
   addHooks(app);
+  app.after(() => {
+    addRoutes(app);
+  });
 
   return app;
 };

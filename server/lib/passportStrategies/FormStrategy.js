@@ -1,10 +1,5 @@
 import _ from 'lodash';
 import { Strategy } from 'fastify-passport';
-import debug from 'debug';
-
-const logApp = debug('task-manager:FormStrategy');
-
-logApp('used');
 
 export default class FormStrategy extends Strategy {
   constructor(name, app) {

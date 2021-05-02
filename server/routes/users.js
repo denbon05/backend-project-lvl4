@@ -3,7 +3,7 @@
 import i18next from 'i18next';
 import debug from 'debug';
 
-const logApp = debug('task-manager:users_routes');
+const logApp = debug('app:routes:users');
 
 export default (app) => {
   app
@@ -33,18 +33,19 @@ export default (app) => {
       }
     })
 
-    .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
-      if (!req.isAuthenticated() || req.user.id.toString() !== req.params.id) { // ! repeated
-        req.flash('error', i18next.t('flash.users.update.notAuthErr'));
-        return reply.redirect(app.reverse('users'));
-      }
+    .get('/users/:id/edit', {
+      name: 'editUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate])
+    }, async (req, reply) => {
       const { id } = req.params;
       const user = await app.objection.models.user.query().findById(id);
       reply.render('users/edit', { user });
       return reply;
     })
 
-    .patch('/users/:id', { name: 'updateUserData' }, async (req, reply) => {
+    .patch('/users/:id', {
+      name: 'updateUserData',
+      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate])
+    }, async (req, reply) => {
       const { id } = req.params;
       logApp('patch req.body.data-> %O', req.body.data);
       const user = await app.objection.models.user.query().findById(id);
@@ -57,15 +58,11 @@ export default (app) => {
         logApp('patch error %O', err);
         req.flash('error', i18next.t('flash.users.update.error'));
         reply.render('users/edit', { user, errors: err.data });
-        return reply;
+        return reply.code(422);
       }
     })
 
-    .delete('/users/:id', { name: 'deleteUser' }, async (req, reply) => {
-      if (!req.isAuthenticated() || req.user.id.toString() !== req.params.id) { // ! repeated
-        req.flash('error', i18next.t('flash.users.update.notAuthErr'));
-        return reply.redirect(app.reverse('users'));
-      }
+    .delete('/users/:id', { name: 'deleteUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]) }, async (req, reply) => {
       req.logOut();
       const { id } = req.params;
       await app.objection.models.user.query().deleteById(id);

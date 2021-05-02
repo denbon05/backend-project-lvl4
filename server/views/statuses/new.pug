@@ -4,6 +4,6 @@ block header
   = t('views.statuses.new.title')
 
 block content
-  +formFor()(action=route('statuses') method='post')= t('views.statuses.name')
+  +formFor()(action=route('statusCreate') method='post')
     +input(status, 'name', errors, false)(type="text")
-    +submit(status)(value=t('views.statuses.new.submit'))
+    +submit(status)(value=t('views.manage.submit'))

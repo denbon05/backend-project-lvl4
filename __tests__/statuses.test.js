@@ -52,7 +52,7 @@ describe('test statuses CRUD', () => {
       },
     });
 
-    expect(response2.statusCode).toBe(302); // ! 422 - have to be
+    expect(response2.statusCode).toBe(302);
   });
 
   it('edit status', async () => {
@@ -86,7 +86,7 @@ describe('test statuses CRUD', () => {
   });
 
   afterEach(async () => {
-    await knex.migrate.rollback(); // * после каждого теста откатываем миграции
+    await knex.migrate.rollback();
   });
 
   afterAll(() => {

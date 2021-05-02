@@ -5,6 +5,8 @@ block header
 
 block content
   +formFor()(action=route('updateUserData', { id: user.id }) method='post')
+    +input(user, 'firstName', errors)(type="text")
+    +input(user, 'lastName', errors)(type="text")
     +input(user, 'email', errors)(type="text")
     +input(user, 'password', errors)(type="password")
     input(name='_method' type='hidden' value='patch')

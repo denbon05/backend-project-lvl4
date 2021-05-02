@@ -1,10 +1,8 @@
 [
   {
-    "name": "in process",
-    "userId": "1"
+    "name": "in process"
   },
   {
-    "name": "finished",
-    "userId": "2"
+    "name": "finished"
   }
 ]

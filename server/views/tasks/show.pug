@@ -1,0 +1,31 @@
+extends ../layouts/application.pug
+
+block content
+  .card
+    .card-header.bg-secondary.text-white
+      h2= task.name
+    .card-body.bg-light
+      p= task.description
+      hr
+      .container
+        .row.p-1
+          .col= t('views.tasks.author')
+          .col= task.creator.name
+        .row.p-1
+          .col= t('views.tasks.executorId')
+          if task.executor
+            .col= task.executor.name
+          else 
+            .col
+        .row.p-1
+          .col= t('views.tasks.statusId')
+          .col= task.status.name
+        .row.p-1
+          .col= t('views.tasks.createdAt')
+          .col= task.createdAt
+        .row.p-1
+          .col
+            a(href=route('editTask', { id: task.id }))= t('views.manage.edit')
+        //-     form(action='/tasks/92' method='post')
+        //-       input(name='_method' type='hidden' value='delete')
+        //-       input.btn.btn-link(type='submit' value='Удалить')

@@ -2,11 +2,10 @@ import i18next from 'i18next';
 import _ from 'lodash';
 import debug from 'debug';
 
-const logHelpers = debug('task-manager:helpers');
+const log = debug('app:helpers');
 
 export default (app) => ({
   route(name, params) {
-    // logHelpers('route name %O', name);
     return app.reverse(name, params);
   },
   t(key) {
@@ -29,7 +28,8 @@ export default (app) => ({
     const date = new Date(str);
     return date.toLocaleString();
   },
-  log(value) {
-    return logHelpers(value);
+  log,
+  sliceId(str) {
+    return str.replace(/[Id]/ig, '');
   },
 });

@@ -41,8 +41,10 @@ describe('test session', () => {
     // они понадобятся для выполнения запросов на маршруты требующие
     // предварительную аутентификацию
     const [sessionCookie] = responseSignIn.cookies;
+    // console.log('cookies=>', sessionCookie)
     const { name, value } = sessionCookie;
     const cookie = { [name]: value };
+    // console.log('after cookies=>', cookie)
 
     const responseSignOut = await app.inject({
       method: 'DELETE',

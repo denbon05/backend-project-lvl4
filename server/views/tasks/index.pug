@@ -1,0 +1,31 @@
+extends ../layouts/application.pug
+
+block content
+  a.nav-link(href=route('newTask'))= t('views.tasks.create')
+  table.table.table-striped
+    thead
+      tr
+        th= t('views.tasks.id')
+        th= t('views.tasks.name')
+        th= t('views.tasks.statusId')
+        th= t('views.tasks.author')
+        th= t('views.tasks.executorId')
+        th= t('views.tasks.createdAt')
+        th
+    tbody
+      each task in tasks 
+        tr
+          td= task.id
+          td
+            a(href=route('showTask', { id: task.id }))= task.name
+          td= task.status.name
+          td= task.creator.name
+          if task.executor
+            td= task.executor.name
+          else
+            td
+          td= formatDate(task.createdAt)
+          td
+            a(href=route('editTask', { id: task.id }))= t('views.manage.edit')
+            +buttonTo(route('deleteTask', { id: task.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')
+    

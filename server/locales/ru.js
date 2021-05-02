@@ -21,6 +21,7 @@ export default {
           success: 'Пользователь успешно изменён',
           notAuthErr: 'Вы не можете редактировать или удалять другого пользователя',
         },
+        authError: 'Вы не можете редактировать или удалять другого пользователя',
       },
       status: {
         create: {
@@ -32,6 +33,20 @@ export default {
           success: 'Статус успешно изменён',
         },
       },
+      task: {
+        create: {
+          success: 'Задача успешно создана',
+          error: 'Не удалось создать задачу',
+        },
+        update: {
+          success: 'Задача успешно обновлена',
+          error: 'Не удалось обновить задачу',
+        },
+        delete: {
+          success: 'Задача успешно удалена',
+        },
+        showError: 'Нет задачи с такими параметрами',
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
@@ -41,6 +56,7 @@ export default {
         signUp: 'Регистрация',
         signOut: 'Выход',
         statuses: 'Статусы',
+        tasks: 'Задачи',
       },
     },
     views: {
@@ -53,6 +69,7 @@ export default {
       users: {
         notAnyUsers: 'Пока еще нету пользователей',
         id: 'ID',
+        fullName: 'Полное имя',
         email: 'Email',
         createdAt: 'Дата создания',
         password: 'Пароль',
@@ -77,13 +94,33 @@ export default {
         new: {
           create: 'Создать статус',
           title: 'Создание статуса',
-          submit: 'Создать',
         },
+      },
+      tasks: {
+        create: 'Создать задачу',
+        createTitle: 'Создание задачи',
+        editTitle: 'Изменение задачи',
+        id: 'ID',
+        name: 'Наименование',
+        statusId: 'Статус',
+        author: 'Автор',
+        executorId: 'Исполнитель',
+        createdAt: 'Дата создания',
       },
       manage: {
         edit: 'Изменить',
         delete: 'Удалить',
+        submit: 'Создать',
       },
+    },
+    form: {
+      firstName: 'Имя',
+      lastName: 'Фамилия',
+      email: 'Email',
+      password: 'Пароль',
+      name: 'Наименование',
+      description: 'Описание',
+      status: 'Статус',
     },
   },
 };

@@ -5,20 +5,38 @@ mixin formFor(entity = null)
   form&attributes(attributes)
     block
 
-mixin input(entity, propertyName, errors = {}, showPorpertyName = true)
+mixin input(entity, propertyName, errors = {}, showPropertyName = true)
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (!errors[propertyName] ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   .form-group(class=(errors[propertyName] && 'has-danger'))
     label(
       for= inputId
-    )= showPorpertyName ? propertyName : ''
+    )= showPropertyName ? t(`form.${propertyName}`) : ''
     input(
       id= inputId
       name=getInputName(propertyName)
       class=classLine
       value=_.get(entity, propertyName, '')
     )&attributes(attributes)
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin textarea(entity, propertyName, errors = {})
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (!propertyErrors ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - name = getInputName(propertyName)
+  - value=_.get(entity, propertyName, '')
+  .form-group(class=(errors[propertyName] && 'has-danger'))
+    label(
+      for= inputId
+    )= t(`form.${propertyName}`)
+    textarea(
+      id= inputId
+      name= name
+      class=classLine
+    )&attributes(attributes) #{value}
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
@@ -30,3 +48,28 @@ mixin buttonTo(action, method)
   form(action=action, method="post")
     input(name="_method" type="hidden" value=method)
     input(type='submit')&attributes(attributes)
+
+mixin select(entity, propertyName, errors = {}, items, multiple = false)
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (!propertyErrors ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - name = getInputName(propertyName)
+  - entityName = entity.constructor.name.toLowerCase()
+  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
+  - log('name %O', name)
+  .form-group
+    label(for=inputId)= t(`views.${entityName}s.${propertyName}`)
+    select.form-control(
+        id= inputId,
+        name=name,
+        multiple=multiple
+        class=classLine
+      )
+      if !multiple
+        option
+      each item in items
+        - isSelect = _.includes(selectedOptions, item.id)
+        - log('item.id %O', item.id)
+        option(value=item.id, selected= isSelect)= item.name
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')

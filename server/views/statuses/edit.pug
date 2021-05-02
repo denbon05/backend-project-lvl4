@@ -5,5 +5,5 @@ block header
 
 block content
   +formFor()(action=route('updateStatus', { id: status.id }) method='post')= t('views.statuses.name')
-    +input(status, 'name', errors, false)(type="text")
+    +input(status, 'name', errors)(type="text")
     +buttonTo(route('updateStatus', { id: status.id }), 'patch')(value=t('views.manage.edit') class='btn btn-primary')

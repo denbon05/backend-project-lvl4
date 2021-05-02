@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import debug from 'debug';
 
-const logApp = debug('task-manager:formObjBuilder');
+const logApp = debug('app:formObjBuilder');
 
 /**
  * @param {Object} object

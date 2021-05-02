@@ -35,7 +35,7 @@
     "project",
     "backend"
   ],
-  "author": "Denis Bondarenko",
+  "author": "Denys Bondarenko",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/denbon05/backend-project-lvl4/issues"
@@ -46,6 +46,7 @@
     "debug": "^4.3.1",
     "dotenv": "^8.2.0",
     "fastify": "^3.11.0",
+    "fastify-auth": "^1.1.0",
     "fastify-error-page": "^4.0.0",
     "fastify-formbody": "^5.0.0",
     "fastify-method-override": "^1.5.4",
