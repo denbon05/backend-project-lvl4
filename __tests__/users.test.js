@@ -57,8 +57,8 @@ describe('test users CRUD', () => {
         data: params,
       },
     });
-
     expect(response.statusCode).toBe(302);
+
     const expected = {
       ..._.omit(params, 'password'),
       passwordDigest: encrypt(params.password),

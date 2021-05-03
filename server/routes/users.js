@@ -34,7 +34,7 @@ export default (app) => {
     })
 
     .get('/users/:id/edit', {
-      name: 'editUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate])
+      name: 'editUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
     }, async (req, reply) => {
       const { id } = req.params;
       const user = await app.objection.models.user.query().findById(id);
@@ -44,7 +44,7 @@ export default (app) => {
 
     .patch('/users/:id', {
       name: 'updateUserData',
-      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate])
+      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
     }, async (req, reply) => {
       const { id } = req.params;
       logApp('patch req.body.data-> %O', req.body.data);
@@ -52,7 +52,7 @@ export default (app) => {
       try {
         await user.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.users.update.success'));
-        reply.redirect(app.reverse('root'));
+        reply.redirect(app.reverse('users'));
         return reply;
       } catch (err) {
         logApp('patch error %O', err);
@@ -62,11 +62,18 @@ export default (app) => {
       }
     })
 
-    .delete('/users/:id', { name: 'deleteUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]) }, async (req, reply) => {
+    .delete('/users/:id', {
+      name: 'deleteUser',
+      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
+    }, async (req, reply) => {
+      const tasks = await app.objection.models.task.query().where('executorId', req.params.id);
+      if (tasks.length > 0) {
+        req.flash('error', i18next.t('flash.users.delete.error'));
+        return reply.redirect('/users');
+      }
       req.logOut();
-      const { id } = req.params;
-      await app.objection.models.user.query().deleteById(id);
-      req.flash('info', i18next.t('flash.users.update.success'));
+      await app.objection.models.user.query().deleteById(req.params.id);
+      req.flash('info', i18next.t('flash.users.delete.success'));
       return reply.redirect(app.reverse('users'));
     });
 };

@@ -112,20 +112,26 @@ const registerPlugins = (app) => {
     models,
   });
 
-  app.decorate('checkIfUserCanEditProfile', (req, reply, done) => {
-    if (req.user?.id === parseInt(req.params.id, 10)) {
-      done();
+  app.decorate('checkIfUserCanEditProfile', async (req, reply) => {
+    if (req.user?.id !== parseInt(req.params.id, 10)) {
+      req.flash('error', i18next.t('flash.users.authError'));
+      reply.redirect('/users');
     }
-    req.flash('error', i18next.t('flash.users.authError'));
-    reply.redirect('/users');
-    return reply;
   });
 
-  // app.decorate('checkIfUserCreatedTask', async (req, reply) => {
-  //   const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
-  //   if (req.user.id !== creatorId) {
-  //     req.flash('error', i18next.t('flash.tasks.authError'));
-  //     reply.redirect('/tasks');
+  app.decorate('checkIfUserCreatedTask', async (req, reply) => {
+    const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
+    if (req.user.id !== creatorId) {
+      req.flash('error', i18next.t('flash.task.authError'));
+      reply.redirect('/tasks');
+    }
+  });
+
+  // app.decorate('checkIfUserHasTasks', async (req, reply) => {
+  //   const tasks = await app.objection.models.task.query().where('executorId', req.params.id)
+  //   if (tasks.length > 0) {
+  //     req.flash('error', i18next.t('flash.users.delete.error'));
+  //     reply.redirect('/users');
   //   }
   // });
 };

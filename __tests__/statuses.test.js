@@ -4,7 +4,9 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import {
+  getTestData, prepareData, signIn, getTableData,
+} from './helpers/index.js';
 
 describe('test statuses CRUD', () => {
   let app;
@@ -57,7 +59,8 @@ describe('test statuses CRUD', () => {
 
   it('edit status', async () => {
     await signIn(app);
-    const id = 1;
+    const ids = await getTableData(app, 'statuses');
+    const { id } = ids[0];
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editStatus', { id }),
@@ -77,9 +80,11 @@ describe('test statuses CRUD', () => {
 
   it('delete status', async () => {
     await signIn(app);
+    const ids = await getTableData(app, 'statuses');
+    const { id } = ids[1];
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteStatus', { id: 1 }),
+      url: app.reverse('deleteStatus', { id }),
     });
 
     expect(response.statusCode).toBe(302);

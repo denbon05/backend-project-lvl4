@@ -14,6 +14,7 @@ export const prepareData = async (app) => {
   // * заполняем БД
   await knex('users').insert(getFixtureData('users.json'));
   await knex('statuses').insert(getFixtureData('statuses.json'));
+  await knex('tasks').insert(getFixtureData('tasks.json'));
 };
 
 export const getUserIdByEmail = async (app, email) => {
@@ -29,3 +30,8 @@ export const signIn = (app) => app.inject({
     data: getTestData().users.existing,
   },
 });
+
+export const getTableData = async (app, tableName, dataType = 'id') => {
+  const data = await app.objection.knex(tableName).select(dataType);
+  return data;
+};

@@ -4,7 +4,9 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import {
+  getTestData, prepareData, signIn, getTableData,
+} from './helpers/index.js';
 
 describe('test statuses CRUD', () => {
   let app;
@@ -44,46 +46,50 @@ describe('test statuses CRUD', () => {
 
     expect(response.statusCode).toBe(302);
 
-  //   const response2 = await app.inject({
-  //     method: 'POST',
-  //     url: app.reverse('statuses'),
-  //     payload: {
-  //       data: { name: '' },
-  //     },
+    const response2 = await app.inject({
+      method: 'POST',
+      url: app.reverse('tasks'),
+      payload: {
+        data: { name: '' },
+      },
+    });
+    expect(response2.statusCode).toBe(302);
   });
 
-  //   expect(response2.statusCode).toBe(302);
-  // });
+  it('edit task', async () => {
+    await signIn(app);
+    const ids = await getTableData(app, 'tasks');
+    const { id } = ids[0];
+    const statusIds = await getTableData(app, 'tasks', 'statusId');
+    const { statusId } = statusIds[0];
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editTask', { id }),
+    });
 
-  // it('edit status', async () => {
-  //   await signIn(app);
-  //   const id = 1;
-  //   const response = await app.inject({
-  //     method: 'GET',
-  //     url: app.reverse('editStatus', { id }),
-  //   });
+    expect(response.statusCode).toBe(302);
 
-  //   expect(response.statusCode).toBe(302);
+    const response2 = await app.inject({
+      method: 'PATCH',
+      url: app.reverse('updateTask', { id }),
+      payload: {
+        data: { name: 'do something useful', statusId },
+      },
+    });
+    expect(response2.statusCode).toBe(302);
+  });
 
-  //   const response2 = await app.inject({
-  //     method: 'PATCH',
-  //     url: app.reverse('updateStatus', { id }),
-  //     payload: {
-  //       data: { name: 'new status' },
-  //     },
-  //   });
-  //   expect(response2.statusCode).toBe(302);
-  // });
+  it('delete task', async () => {
+    await signIn(app);
+    const ids = await getTableData(app, 'tasks');
+    const { id } = ids[1];
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteTask', { id }),
+    });
 
-  // it('delete status', async () => {
-  //   await signIn(app);
-  //   const response = await app.inject({
-  //     method: 'DELETE',
-  //     url: app.reverse('deleteStatus', { id: 1 }),
-  //   });
-
-  //   expect(response.statusCode).toBe(302);
-  // });
+    expect(response.statusCode).toBe(302);
+  });
 
   afterEach(async () => {
     await knex.migrate.rollback();

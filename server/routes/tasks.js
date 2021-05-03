@@ -25,7 +25,7 @@ export default (app) => {
         app.objection.models.taskStatus.query(),
       ]);
 
-      // logApp('tasks %O', tasks)
+      logApp('tasks %O', tasks);
 
       reply.render('tasks/index', {
         tasks,
@@ -41,7 +41,6 @@ export default (app) => {
         app.objection.models.user.query(),
         app.objection.models.taskStatus.query(),
       ]);
-      // logApp('[task, users, statuses] %O', [task, users, statuses])
       reply.render('tasks/new', {
         task,
         users,
@@ -109,14 +108,14 @@ export default (app) => {
       return reply;
     })
 
-    .delete('/statuses/:id', {
-      name: 'deleteStatus',
-      preValidation: app.auth([app.authenticate]),
+    .delete('/tasks/:id', {
+      name: 'deleteTask',
+      preValidation: app.auth([app.checkIfUserCreatedTask, app.authenticate]),
     }, async (req, reply) => {
-      const { id } = req.params;
-      await app.objection.models.taskStatus.query().deleteById(id);
+      await app.objection.models.task.query().deleteById(req.params.id);
       req.flash('info', i18next.t('flash.task.delete.success'));
-      return reply.redirect(app.reverse('tasks'));
+      reply.redirect(app.reverse('tasks'));
+      return reply;
     })
 
     .patch('/tasks/:id', { name: 'updateTask', preValidation: app.authenticate }, async (req, reply) => {
