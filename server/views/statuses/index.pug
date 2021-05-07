@@ -15,6 +15,6 @@ block content
           td= status.id
           td= status.name
           td= formatDate(status.createdAt)
-          td 
-            a(href=route('editStatus', { id: status.id }))= t('views.manage.edit')
+          td.d-md-flex
+            a(class='btn-link btn' href=route('editStatus', { id: status.id }))= t('views.manage.edit')
             +buttonTo(route('deleteStatus', { id: status.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')

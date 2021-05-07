@@ -19,6 +19,6 @@ block content
             td= user.name
             td= user.email
             td= formatDate(user.createdAt)
-            td 
-              a(href=route('editUser', { id: user.id }))= t('views.manage.edit')
+            td.d-md-flex
+              a(class='btn-link btn' href=route('editUser', { id: user.id }))= t('views.manage.edit')
               +buttonTo(route('deleteUser', { id: user.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')

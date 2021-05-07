@@ -68,8 +68,8 @@ const setUpStaticAssets = (app) => {
 const setupLocalization = () => {
   i18next
     .init({
-      lng: 'ru',
-      fallbackLng: 'en',
+      lng: 'en',
+      fallbackLng: 'ru',
       debug: false,
       resources,
     });
@@ -126,14 +126,6 @@ const registerPlugins = (app) => {
       reply.redirect('/tasks');
     }
   });
-
-  // app.decorate('checkIfUserHasTasks', async (req, reply) => {
-  //   const tasks = await app.objection.models.task.query().where('executorId', req.params.id)
-  //   if (tasks.length > 0) {
-  //     req.flash('error', i18next.t('flash.users.delete.error'));
-  //     reply.redirect('/users');
-  //   }
-  // });
 };
 
 const addHooks = (app) => {

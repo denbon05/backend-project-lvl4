@@ -1,0 +1,9 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.labels.titleUpdate')
+
+block content
+  +formFor()(action=route('updateLabel', { id: label.id }) method='post')
+    +input(label, 'name', errors)(type="text")
+    +buttonTo(route('updateLabel', { id: label.id }), 'patch')(value=t('views.manage.edit') class='btn btn-primary')

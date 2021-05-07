@@ -6,7 +6,7 @@ import path from 'path';
 
 const unique = objectionUnique({ fields: ['name'] });
 
-export default class TaskStatus extends unique(Model) {
+export default class Label extends unique(Model) {
   $parseJson(json, options) {
     const parsed = super.$parseJson(json, options);
     return {
@@ -16,7 +16,7 @@ export default class TaskStatus extends unique(Model) {
   }
 
   static get tableName() {
-    return 'statuses';
+    return 'labels';
   }
 
   static get jsonSchema() {
@@ -27,18 +27,19 @@ export default class TaskStatus extends unique(Model) {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, errorMessage: 'Have to be at least 1 character' },
+        creatorId: { type: 'integer' },
       },
     };
   }
 
   static get relationMappings() {
     return {
-      tasks: {
-        relation: Model.HasManyRelation,
-        modelClass: path.join(__dirname, 'Task'),
+      creator: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, 'User'),
         join: {
-          from: 'statuses.id',
-          to: 'tasks.statusId',
+          from: 'labels.creatorId',
+          to: 'users.id',
         },
       },
     };

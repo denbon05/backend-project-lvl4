@@ -24,10 +24,10 @@
     "new": {
       "name": "todo"
     },
-    "exiting": {
+    "existing": {
       "name": "in process"
     },
-    "exiting2": {
+    "existing2": {
       "name": "finished"
     }
   },
@@ -38,11 +38,23 @@
       "description": "refactor something",
       "status": "todo"
     },
-    "exiting": {
+    "existing": {
       "name": "prepare environment",
       "description": "deploy environment with specific librares",
       "status": "finished",
       "exutor": "Lawrence"
+    }
+  },
+
+  "labels": {
+    "new": {
+      "name": "label 3"
+    },
+    "existing1": {
+      "name": "label 2"
+    },
+    "existing2": {
+      "name": "label 1"
     }
   }
 }

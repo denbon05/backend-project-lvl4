@@ -25,7 +25,7 @@ block content
           else
             td
           td= formatDate(task.createdAt)
-          td
-            a(href=route('editTask', { id: task.id }))= t('views.manage.edit')
+          td.d-md-flex
+            a(class='btn-link btn' href=route('editTask', { id: task.id }))= t('views.manage.edit')
             +buttonTo(route('deleteTask', { id: task.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')
     

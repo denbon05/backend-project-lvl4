@@ -6,3 +6,6 @@
 ## <a target="_blank" href="https://task-manager-prod.herokuapp.com/">Follow</a>
 
 ### Task manager for multiple users
+
+### Usage
+<p>Follow link above, register, log in as a user with your email and password. Now you can schedule and distribute tasks with your team.</p> 
