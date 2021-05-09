@@ -53,7 +53,7 @@ export default (app) => {
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('req.body.data %O', req.body.data);
-      const { labelIds } = req.body.data;
+      const labelIds = req.body.data.labelIds || [];
       try {
         const task = await app.objection.models.task.fromJson({
           ...(parseTaskData(req.body.data)),
@@ -61,9 +61,11 @@ export default (app) => {
         });
         logApp('task %O', task);
 
+        const labels = [labelIds].flat().map((id) => ({ id: parseInt(id, 10) }));
+        logApp('labels %O', labels);
         await app.objection.models.task.transaction(async (trx) => {
           await app.objection.models.task.query(trx).insertGraph([{
-            ...task, labels: [labelIds].flat().map((id) => ({ id: parseInt(id, 10) })),
+            ...task, labels,
           }], { relate: ['labels'] });
         });
 
