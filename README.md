@@ -9,3 +9,11 @@
 
 ### Usage
 <p>Follow link above, register, log in as a user with your email and password. Now you can schedule and distribute tasks with your team.</p> 
+
+#### Limitations
+<ul>
+<li><b>Users:</b> You can manage only own profile</li>
+<li><b>Statuses:</b> Total access</li>
+<li><b>Labels:</b> Total access, but if label belong to task, you can't delete it</li>
+<li><b>Tasks:</b> Only author can delete it</li>
+</ul>
