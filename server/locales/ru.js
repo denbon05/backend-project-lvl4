@@ -124,6 +124,7 @@ export default {
         statusId: 'Статус',
         author: 'Автор',
         executorId: 'Исполнитель',
+        labelIds: 'Метки',
         createdAt: 'Дата создания',
       },
       labels: {

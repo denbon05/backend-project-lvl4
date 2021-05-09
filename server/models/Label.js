@@ -27,19 +27,22 @@ export default class Label extends unique(Model) {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, errorMessage: 'Have to be at least 1 character' },
-        creatorId: { type: 'integer' },
       },
     };
   }
 
   static get relationMappings() {
     return {
-      creator: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User'),
+      tasks: {
+        relation: Model.ManyToManyRelation,
+        modelClass: path.join(__dirname, 'Task'),
         join: {
-          from: 'labels.creatorId',
-          to: 'users.id',
+          from: 'labels.id',
+          through: {
+            from: 'tasks_labels.labelId',
+            to: 'tasks_labels.taskId',
+          },
+          to: 'task.id',
         },
       },
     };

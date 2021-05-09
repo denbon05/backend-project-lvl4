@@ -23,9 +23,14 @@ block content
         .row.p-1
           .col= t('views.tasks.createdAt')
           .col= task.createdAt
+        if task.labels.length > 0
+          .row.p-1
+            .col
+              h6= t('views.tasks.labelIds')
+              ul 
+                each label in task.labels 
+                  li= label.name
         .row.p-1
-          .col
-            a(href=route('editTask', { id: task.id }))= t('views.manage.edit')
-        //-     form(action='/tasks/92' method='post')
-        //-       input(name='_method' type='hidden' value='delete')
-        //-       input.btn.btn-link(type='submit' value='Удалить')
+          .col.d-flex
+            a(class='btn-link btn' href=route('editTask', { id: task.id }))= t('views.manage.edit')
+            +buttonTo(route('deleteTask', { id: task.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')

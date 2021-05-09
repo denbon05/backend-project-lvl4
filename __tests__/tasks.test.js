@@ -33,7 +33,7 @@ describe('test statuses CRUD', () => {
     expect(response.statusCode).toBe(302);
   });
 
-  it('create task', async () => {
+  it('create task 1', async () => {
     await signIn(app);
     const params = testData.tasks.new;
     const response = await app.inject({
@@ -56,11 +56,32 @@ describe('test statuses CRUD', () => {
     expect(response2.statusCode).toBe(302);
   });
 
+  it('create task 2', async () => {
+    await signIn(app);
+    const params = testData.tasks.new;
+    const labelIds = await getTableData(app, 'labels');
+    const response = await app.inject({
+      method: 'POST',
+      url: app.reverse('tasks'),
+      payload: {
+        data: {
+          ...params,
+          labelIds: labelIds.map(({ id }) => id),
+        },
+      },
+    });
+
+    expect(response.statusCode).toBe(302);
+  });
+
   it('edit task', async () => {
     await signIn(app);
-    const ids = await getTableData(app, 'tasks');
-    const { id } = ids[0];
+    const tasksIds = await getTableData(app, 'tasks');
     const statusIds = await getTableData(app, 'tasks', 'statusId');
+    const labelIds = await getTableData(app, 'labels');
+
+    const { id: labelId } = labelIds[0];
+    const { id } = tasksIds[0];
     const { statusId } = statusIds[0];
     const response = await app.inject({
       method: 'GET',
@@ -73,7 +94,7 @@ describe('test statuses CRUD', () => {
       method: 'PATCH',
       url: app.reverse('updateTask', { id }),
       payload: {
-        data: { name: 'do something useful', statusId },
+        data: { name: 'do something useful', statusId, labelIds: labelId },
       },
     });
     expect(response2.statusCode).toBe(302);

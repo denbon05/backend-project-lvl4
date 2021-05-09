@@ -123,7 +123,8 @@ export default {
         name: 'Name',
         statusId: 'Status',
         author: 'Author',
-        executorId: 'Artist',
+        executorId: 'Executor',
+        labelIds: 'Labels',
         createdAt: 'Creation date',
       },
       labels: {

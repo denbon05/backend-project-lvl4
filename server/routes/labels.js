@@ -23,10 +23,7 @@ export default (app) => {
     .post('/labels', { name: 'labelCreate', preValidation: app.authenticate }, async (req, reply) => {
       logApp('post data %O', req.body.data);
       try {
-        const label = await app.objection.models.label.fromJson({
-          ...req.body.data,
-          creatorId: req.user.id,
-        });
+        const label = await app.objection.models.label.fromJson(req.body.data);
         logApp('label %O', label);
 
         await app.objection.models.label.query().insert(label);
