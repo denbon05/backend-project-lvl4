@@ -26,7 +26,13 @@ export default (app) => ({
   },
   formatDate(str) {
     const date = new Date(str);
-    return date.toLocaleString();
+    const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+    const offset = date.getTimezoneOffset() / 60;
+    const hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate.toUTCString();
   },
   log,
   sliceId(str) {

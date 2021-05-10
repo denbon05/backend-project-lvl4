@@ -67,6 +67,7 @@ export default (app) => {
           await app.objection.models.task.query(trx).insertGraph([{
             ...task, labels,
           }], { relate: ['labels'] });
+          logApp('task.$relatedQuery to labels %O', await task.$relatedQuery('labels'));
         });
 
         req.flash('info', i18next.t('flash.task.create.success'));
@@ -75,6 +76,7 @@ export default (app) => {
       } catch (err) {
         logApp('post error %O', err);
         if (!(err instanceof ValidationError)) throw Error(err);
+
         req.flash('error', i18next.t('flash.task.create.error'));
         const task = new app.objection.models.task().$set(req.body.data); // eslint-disable-line
         const [users, statuses, labels] = await Promise.all([
@@ -106,11 +108,12 @@ export default (app) => {
 
     .get('/tasks/:id/edit', { name: 'editTask', preValidation: app.authenticate }, async (req, reply) => {
       const [task, users, statuses, labels] = await Promise.all([
-        app.objection.models.task.query().findById(req.params.id),
+        app.objection.models.task.query().findById(req.params.id).withGraphJoined('labels'),
         app.objection.models.user.query(),
         app.objection.models.taskStatus.query(),
         app.objection.models.label.query(),
       ]);
+      logApp('edit labels %O', labels);
       reply.render('tasks/edit', {
         task,
         users,

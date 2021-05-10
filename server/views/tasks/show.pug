@@ -26,7 +26,7 @@ block content
         if task.labels.length > 0
           .row.p-1
             .col
-              h6= t('views.tasks.labelIds')
+              h6= `${t('views.tasks.labelIds')}:`
               ul 
                 each label in task.labels 
                   li= label.name

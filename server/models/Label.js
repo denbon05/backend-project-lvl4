@@ -42,7 +42,7 @@ export default class Label extends unique(Model) {
             from: 'tasks_labels.labelId',
             to: 'tasks_labels.taskId',
           },
-          to: 'task.id',
+          to: 'tasks.id',
         },
       },
     };

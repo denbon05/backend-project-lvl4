@@ -36,6 +36,10 @@ export default {
           error: 'Failed to change status',
           success: 'Status changed successfully',
         },
+        delete: {
+          error: 'Failed to delete status',
+          success: 'Status deleted successfully',
+        },
       },
       task: {
         create: {

@@ -1,5 +1,6 @@
 - const getInputName = (property) => `data[${property}]`
 - const getInputId = (property) => `data_${property}`
+- const normalizeName = (name) => name.match('labelIds') ? 'labels' : name
 
 mixin formFor(entity = null)
   form&attributes(attributes)
@@ -55,8 +56,7 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
-  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
-  - log('name %O', name)
+  - selectedOptions = entity[normalizeName(propertyName)] ? [entity[normalizeName(propertyName)]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
   .form-group
     label(for=inputId)= t(`views.${entityName}s.${propertyName}`)
     select.form-control(
@@ -69,7 +69,6 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
         option
       each item in items
         - isSelect = _.includes(selectedOptions, item.id)
-        - log('item.id %O', item.id)
         option(value=item.id, selected= isSelect)= item.name
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
