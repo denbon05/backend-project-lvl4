@@ -71,6 +71,7 @@ export default {
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
+
     layouts: {
       application: {
         users: 'Пользователи',
@@ -82,6 +83,7 @@ export default {
         labels: 'Метки',
       },
     },
+
     views: {
       session: {
         new: {
@@ -130,6 +132,7 @@ export default {
         executorId: 'Исполнитель',
         labelIds: 'Метки',
         createdAt: 'Дата создания',
+        filter: 'Показать',
       },
       labels: {
         id: 'ID',
@@ -141,6 +144,12 @@ export default {
           title: 'Создание метки',
         },
       },
+      filters: {
+        status: 'Статус',
+        executor: 'Исполнитель',
+        label: 'Метка',
+        isCreatorUser: 'Только мои задачи',
+      },
 
       manage: {
         edit: 'Изменить',
@@ -148,6 +157,7 @@ export default {
         submit: 'Создать',
       },
     },
+
     form: {
       firstName: 'Имя',
       lastName: 'Фамилия',

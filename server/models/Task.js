@@ -73,4 +73,22 @@ export default class Task extends Model {
       },
     };
   }
+
+  static modifiers = {
+    filterStatus(query, id) {
+      query.where('statusId', id);
+    },
+
+    filterExecutor(query, id) {
+      query.where('executorId', id);
+    },
+
+    filterLabel(query, id) {
+      query.where('labels.id', id);
+    },
+
+    filterCreator(query, id) {
+      query.where('creatorId', id);
+    },
+  };
 }

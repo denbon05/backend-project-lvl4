@@ -22,6 +22,7 @@ describe('test statuses CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
+    await signIn(app);
   });
 
   it('tasks list', async () => {
@@ -34,7 +35,6 @@ describe('test statuses CRUD', () => {
   });
 
   it('create task 1', async () => {
-    await signIn(app);
     const params = testData.tasks.new;
     const response = await app.inject({
       method: 'POST',
@@ -45,7 +45,6 @@ describe('test statuses CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-
     const response2 = await app.inject({
       method: 'POST',
       url: app.reverse('tasks'),
@@ -57,7 +56,6 @@ describe('test statuses CRUD', () => {
   });
 
   it('create task 2', async () => {
-    await signIn(app);
     const params = testData.tasks.new;
     const labelIds = await getTableData(app, 'labels');
     const response = await app.inject({
@@ -75,7 +73,6 @@ describe('test statuses CRUD', () => {
   });
 
   it('edit task', async () => {
-    await signIn(app);
     const tasksIds = await getTableData(app, 'tasks');
     const statusIds = await getTableData(app, 'tasks', 'statusId');
     const labelIds = await getTableData(app, 'labels');
@@ -101,7 +98,6 @@ describe('test statuses CRUD', () => {
   });
 
   it('delete task', async () => {
-    await signIn(app);
     const ids = await getTableData(app, 'tasks');
     const { id } = ids[1];
     const response = await app.inject({

@@ -16,11 +16,19 @@ const parseTaskData = (data) => Object.entries(data)
 export default (app) => {
   app
     .get('/tasks', { name: 'tasks', preValidation: app.authenticate }, async (req, reply) => {
-      const tasksQwery = app.objection.models.task.query()
-        .withGraphJoined('[creator, executor, status]');
+      const { query, user: { id } } = req;
+      logApp('.get tasks req.query %O', req.query);
+
+      const tasksQuery = app.objection.models.task.query()
+        .withGraphJoined('[creator, executor, status, labels]');
+
+      if (query.status) tasksQuery.modify('filterStatus', query.status);
+      if (query.executor) tasksQuery.modify('filterExecutor', query.executor);
+      if (query.label) tasksQuery.modify('filterLabel', query.label);
+      if (query.isCreatorUser) tasksQuery.modify('filterCreator', id);
 
       const [tasks, users, statuses, labels] = await Promise.all([
-        tasksQwery,
+        tasksQuery,
         app.objection.models.user.query(),
         app.objection.models.taskStatus.query(),
         app.objection.models.label.query(),

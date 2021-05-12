@@ -1,6 +1,7 @@
 export default {
   translation: {
     appName: 'Task Manager',
+
     flash: {
       session: {
         create: {
@@ -82,6 +83,7 @@ export default {
         labels: 'Labels',
       },
     },
+
     views: {
       session: {
         new: {
@@ -130,6 +132,7 @@ export default {
         executorId: 'Executor',
         labelIds: 'Labels',
         createdAt: 'Creation date',
+        filter: 'Show',
       },
       labels: {
         id: 'ID',
@@ -141,6 +144,12 @@ export default {
           title: 'Create Label',
         },
       },
+      filters: {
+        status: 'Status',
+        executor: 'Executor',
+        label: 'Label',
+        isCreatorUser: 'Only my tasks',
+      },
 
       manage: {
         edit: 'Edit',
@@ -148,6 +157,7 @@ export default {
         submit: 'Create',
       },
     },
+
     form: {
       firstName: 'Name',
       lastName: 'Last Name',

@@ -72,3 +72,28 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
         option(value=item.id, selected= isSelect)= item.name
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin filterSelect(entity, propertyName, items)
+  - classLine = 'form-control ml-2 mr-3'
+  - inputId = getInputId(propertyName)
+  .form-group 
+    label(for=inputId)= t(`views.filters.${propertyName}`)
+    select.form-control(
+        id=inputId,
+        name=propertyName,
+        multiple=false
+        class=classLine
+      )
+      option(selected= true)
+      each item in items 
+        - isSelect = _.includes(selectedOptions, item.id)
+        option(value=item.id, selected= isSelect)= item.name
+
+mixin checkbox(entity, propertyName)
+  - classLine = 'form-control form-check-input ml-2 mr-3'
+  - inputId = getInputId(propertyName)
+  .form-group.form-check
+    label.form-check-label(for=inputId)= t(`views.filters.${propertyName}`)
+    input.form-check-input(class=classLine id=inputId type='checkbox' name=propertyName)
+
+

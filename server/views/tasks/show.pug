@@ -22,7 +22,7 @@ block content
           .col= task.status.name
         .row.p-1
           .col= t('views.tasks.createdAt')
-          .col= task.createdAt
+          .col= formatDate(task.createdAt)
         if task.labels.length > 0
           .row.p-1
             .col
