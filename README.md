@@ -8,7 +8,9 @@
 ### Task manager for multiple users
 
 ### Usage
-<p>Follow link above, register, log in as a user with your email and password. Now you can schedule and distribute tasks with your team.</p> 
+<p>Follow link above, register, log in as a user with your email and password. Now you can schedule and distribute tasks with your team.
+<p><small>Wait a little, this is a free heroku plan.</small></p></p> 
+
 
 #### Limitations
 <ul>

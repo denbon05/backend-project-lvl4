@@ -45,13 +45,14 @@ const rollbar = new Rollbar({
   captureUnhandledRejections: true,
 });
 
-// const setUpErrorHandling = (app) => {
-//   app.setErrorHandler((err, req, reply) => {
-//     if (isProduction) rollbar.log(err);
-//     req.flash('error', err.message);
-//     reply.redirect('/');
-//   });
-// };
+const setUpErrorHandling = (app) => {
+  app.setErrorHandler((err, req, reply) => {
+    req.log.error(err);
+    if (isProduction) rollbar.log(err);
+    req.flash('error', err.message);
+    reply.redirect('/');
+  });
+};
 
 const setUpViews = (app) => {
   const { devServer } = webpackConfig;
@@ -165,7 +166,7 @@ export default () => {
   setUpViews(app);
   setUpStaticAssets(app);
   addHooks(app);
-  // setUpErrorHandling(app);
+  setUpErrorHandling(app);
   app.after(() => {
     addRoutes(app);
   });
