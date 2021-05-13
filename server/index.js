@@ -18,6 +18,8 @@ import qs from 'qs';
 import pointOfView from 'point-of-view';
 import Pug from 'pug';
 import i18next from 'i18next';
+import Rollbar from 'rollbar';
+
 // @ts-ignore
 import webpackConfig from '../webpack.config.babel.js';
 import resources from './locales/index.js';
@@ -33,9 +35,23 @@ const logApp = debug('task-manager');
 
 dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
-// const isProduction = mode === 'production';
+const isProduction = mode === 'production';
 const isDevelopment = mode === 'development';
 logApp('Mode app: %o', mode);
+
+const rollbar = new Rollbar({
+  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
+
+const setUpErrorHandling = (app) => {
+  app.setErrorHandler((err, req, reply) => {
+    if (isProduction) rollbar.log(err);
+    req.flash('error', err.message);
+    reply.redirect('/');
+  });
+};
 
 const setUpViews = (app) => {
   const { devServer } = webpackConfig;
@@ -149,6 +165,7 @@ export default () => {
   setUpViews(app);
   setUpStaticAssets(app);
   addHooks(app);
+  setUpErrorHandling(app);
   app.after(() => {
     addRoutes(app);
   });
