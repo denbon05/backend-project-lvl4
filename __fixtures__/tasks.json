@@ -2,15 +2,15 @@
   {
     "name": "refactor",
     "description": "do refactoring",
-    "statusId": "1"
-  },
-  {
-    "name": "fix some problem",
-    "statusId": "1"
+    "statusId": 7,
+    "creatorId": 7,
+    "id": 2
   },
   {
     "name": "prepare environment",
-    "statusId": "1",
-    "executorId": "2"
+    "statusId": 7,
+    "creatorId": 9,
+    "executorId": 2,
+    "id": 3
   }
 ]

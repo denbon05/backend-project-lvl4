@@ -11,28 +11,18 @@ export const getTestData = () => getFixtureData('testData.json');
 
 export const prepareData = async (app) => {
   const { knex } = app.objection;
-  // * заполняем БД
+
   await knex('users').insert(getFixtureData('users.json'));
   await knex('statuses').insert(getFixtureData('statuses.json'));
   await knex('tasks').insert(getFixtureData('tasks.json'));
   await knex('labels').insert(getFixtureData('labels.json'));
+  await knex('tasks_labels').insert(getFixtureData('tasks_labels.json'));
 };
 
-export const getUserIdByEmail = async (app, email) => {
-  const { knex } = app.objection;
-  const [user] = await knex('users').select().where('email', email);
-  return user.id.toString();
-};
-
-export const signIn = (app) => app.inject({
+export const signIn = async (app, user = 'existing') => await app.inject({
   method: 'POST',
   url: app.reverse('session'),
   payload: {
-    data: getTestData().users.existing,
+    data: getTestData().users[user],
   },
 });
-
-export const getTableData = async (app, tableName, dataType = 'id') => {
-  const data = await app.objection.knex(tableName).select(dataType);
-  return data;
-};

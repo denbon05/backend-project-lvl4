@@ -56,6 +56,7 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
+  - log('field name %O', name)
   - selectedOptions = entity[normalizeName(propertyName)] ? [entity[normalizeName(propertyName)]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
   .form-group
     label(for=inputId)= t(`views.${entityName}s.${propertyName}`)

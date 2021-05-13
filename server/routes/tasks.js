@@ -18,6 +18,7 @@ export default (app) => {
     .get('/tasks', { name: 'tasks', preValidation: app.authenticate }, async (req, reply) => {
       const { query, user: { id } } = req;
       logApp('.get tasks req.query %O', req.query);
+      logApp('req.cookies %O', req.cookies);
 
       const tasksQuery = app.objection.models.task.query()
         .withGraphJoined('[creator, executor, status, labels]');
@@ -61,6 +62,7 @@ export default (app) => {
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('req.body.data %O', req.body.data);
+
       const labelIds = req.body.data.labelIds || [];
       try {
         const task = await app.objection.models.task.fromJson({

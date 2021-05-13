@@ -4,7 +4,7 @@ import {
   describe, beforeAll, it, expect, afterAll,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import { getTestData, prepareData, signIn } from './helpers/index.js';
 
 describe('test session', () => {
   let app;
@@ -28,28 +28,20 @@ describe('test session', () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseSignIn = await app.inject({
-      method: 'POST',
-      url: app.reverse('session'),
-      payload: {
-        data: testData.users.existing,
-      },
-    });
+    const responseSignIn = await signIn(app);
 
     expect(responseSignIn.statusCode).toBe(302);
-    // после успешной аутентификации получаем куки из ответа,
-    // они понадобятся для выполнения запросов на маршруты требующие
-    // предварительную аутентификацию
+    // after successful authentication, we get cookies from the response,
+    // they will be needed to execute requests for routes that require
+    // pre-authentication
     const [sessionCookie] = responseSignIn.cookies;
-    // console.log('cookies=>', sessionCookie)
     const { name, value } = sessionCookie;
     const cookie = { [name]: value };
-    // console.log('after cookies=>', cookie)
 
     const responseSignOut = await app.inject({
       method: 'DELETE',
       url: app.reverse('session'),
-      // используем полученные ранее куки
+      // we use previously received cookies
       cookies: cookie,
     });
 

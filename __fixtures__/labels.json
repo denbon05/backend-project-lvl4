@@ -1,8 +1,10 @@
 [
   {
-    "name": "label 1"
+    "name": "question",
+    "id": 1
   },
   {
-    "name": "label 2"
+    "name": "invalid",
+    "id": 2
   }
 ]

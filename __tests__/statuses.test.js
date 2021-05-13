@@ -4,9 +4,7 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import {
-  getTestData, prepareData, signIn, getTableData,
-} from './helpers/index.js';
+import { getTestData, prepareData, signIn } from './helpers/index.js';
 
 describe('test statuses CRUD', () => {
   let app;
@@ -22,19 +20,10 @@ describe('test statuses CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-  });
-
-  it('statuses list', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('statuses'),
-    });
-
-    expect(response.statusCode).toBe(302);
+    await signIn(app);
   });
 
   it('create status', async () => {
-    await signIn(app);
     const params = testData.statuses.new;
     const response = await app.inject({
       method: 'POST',
@@ -58,9 +47,7 @@ describe('test statuses CRUD', () => {
   });
 
   it('edit status', async () => {
-    await signIn(app);
-    const ids = await getTableData(app, 'statuses');
-    const { id } = ids[0];
+    const { id } = testData.statuses.existing;
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editStatus', { id }),
@@ -79,9 +66,7 @@ describe('test statuses CRUD', () => {
   });
 
   it('delete status', async () => {
-    await signIn(app);
-    const ids = await getTableData(app, 'statuses');
-    const { id } = ids[1];
+    const { id } = testData.statuses.existing;
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteStatus', { id }),

@@ -148,10 +148,10 @@ export default () => {
   setupLocalization();
   setUpViews(app);
   setUpStaticAssets(app);
-  addHooks(app);
   app.after(() => {
     addRoutes(app);
   });
+  addHooks(app);
 
   return app;
 };

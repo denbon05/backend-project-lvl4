@@ -4,14 +4,14 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import {
-  getTestData, prepareData, signIn, getTableData,
-} from './helpers/index.js';
+import { getTestData, prepareData, signIn } from './helpers/index.js';
 
 describe('labels statuses CRUD', () => {
   let app;
   let knex;
   const testData = getTestData();
+
+  const { existing1: existedLabel } = testData.labels;
 
   beforeAll(async () => {
     app = await getApp();
@@ -23,15 +23,6 @@ describe('labels statuses CRUD', () => {
     await knex.migrate.latest();
     await prepareData(app);
     await signIn(app);
-  });
-
-  it('labels list', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('labels'),
-    });
-
-    expect(response.statusCode).toBe(302);
   });
 
   it('create label', async () => {
@@ -58,31 +49,26 @@ describe('labels statuses CRUD', () => {
   });
 
   it('edit label', async () => {
-    const ids = await getTableData(app, 'labels');
-    const { id } = ids[1];
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('editLabel', { id }),
+      url: app.reverse('editLabel', { id: existedLabel.id }),
     });
-
     expect(response.statusCode).toBe(302);
 
     const response2 = await app.inject({
       method: 'PATCH',
-      url: app.reverse('updateLabel', { id }),
+      url: app.reverse('updateLabel', { id: existedLabel.id }),
       payload: {
-        data: { name: 'new label' },
+        data: { name: 'wontfix' },
       },
     });
     expect(response2.statusCode).toBe(302);
   });
 
   it('delete label', async () => {
-    const ids = await getTableData(app, 'labels');
-    const { id } = ids[0];
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteLabel', { id }),
+      url: app.reverse('deleteLabel', { id: existedLabel.id }),
     });
 
     expect(response.statusCode).toBe(302);
