@@ -25,7 +25,7 @@ module.exports = {
     migrations,
   },
   production: {
-    client: 'sqlite3',
+    client: 'postgresql',
     connection: {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
