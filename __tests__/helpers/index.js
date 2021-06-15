@@ -19,7 +19,7 @@ export const prepareData = async (app) => {
   await knex('tasks_labels').insert(getFixtureData('tasks_labels.json'));
 };
 
-export const signIn = async (app, user = 'existing') => await app.inject({
+export const signIn = async (app, user = 'existing') => await app.inject({ // eslint-disable-line
   method: 'POST',
   url: app.reverse('session'),
   payload: {

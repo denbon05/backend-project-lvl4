@@ -43,16 +43,16 @@ describe('test relations CRUD', () => {
     console.log('taskData ->>', taskNewData);
 
     const task = await models.task // ? не находит task withGraphJoined('labels')
-      .query()
-      .findOne({ 'tasks.name': taskNewData.name })
-      .withGraphJoined('labels');
-    
+      .query();
+      // .findOne({ 'name': taskNewData.name })
+      // .withGraphJoined('labels');
+
     console.log('task ->>', task);
     // console.log('labels ->>', task.labels);
 
     // const newTask = await models.task.query().findOne({ 'tasks.name': taskData.name });
     // console.log('new task ->>', newTask);
-
+    expect(response.statusCode).toBe(302);
   });
 
   afterEach(async () => {

@@ -4,12 +4,12 @@ import {
   describe, beforeAll, it, expect, afterAll,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import { prepareData, signIn } from './helpers/index.js';
 
 describe('test session', () => {
   let app;
   let knex;
-  let testData;
+  // let testData;
 
   beforeAll(async () => {
     app = await getApp();
@@ -17,7 +17,7 @@ describe('test session', () => {
     knex = app.objection.knex;
     await knex.migrate.latest();
     await prepareData(app);
-    testData = getTestData();
+    // testData = getTestData();
   });
 
   it('test sign in / sign out', async () => {
