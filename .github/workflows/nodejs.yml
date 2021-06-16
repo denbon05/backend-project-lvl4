@@ -23,7 +23,6 @@ jobs:
       - name: npm install, build
         run: |
           make install
-          make build
         env:
           CI: true
       - name: Run linter
@@ -32,15 +31,12 @@ jobs:
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-          SESSION_KEY: ${{ secrets.SESSION_KEY }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.DB_NAME }}
         with:
           coverageCommand: make cover
           debug: true
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
