@@ -19,10 +19,17 @@ export const prepareData = async (app) => {
   await knex('tasks_labels').insert(getFixtureData('tasks_labels.json'));
 };
 
-export const signIn = async (app, user = 'existing') => await app.inject({ // eslint-disable-line
-  method: 'POST',
-  url: app.reverse('session'),
-  payload: {
-    data: getTestData().users[user],
-  },
-});
+export const getCookie = async (app, data) => {
+  const responseSignIn = await app.inject({
+    method: 'POST',
+    url: app.reverse('session'),
+    payload: {
+      data,
+    },
+  });
+
+  const [sessionCookie] = responseSignIn.cookies;
+  const { name, value } = sessionCookie;
+  const cookie = { [name]: value };
+  return cookie;
+};

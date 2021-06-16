@@ -4,12 +4,13 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import { getTestData, prepareData, getCookie } from './helpers/index.js';
 
 describe('test relations CRUD', () => {
   let app;
   let knex;
   let models;
+  let cookie;
   const testData = getTestData();
 
   beforeAll(async () => {
@@ -23,17 +24,17 @@ describe('test relations CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    await signIn(app);
+    cookie = await getCookie(app, testData.users.existing)
   });
 
   it('Create task with relations: labels, statuses, executor', async () => {
     const taskNewData = testData.tasks.new;
-
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('createTask'),
       payload: {
         data: {
+          cookies: cookie,
           ...taskNewData,
           labelIds: [1, 2],
         },
@@ -42,7 +43,7 @@ describe('test relations CRUD', () => {
     // console.log("response ->>", response.statusCode);
     console.log('taskData ->>', taskNewData);
 
-    const task = await models.task // ? не находит task withGraphJoined('labels')
+    const task = await models.task // ? не добавилась новая задача
       .query();
       // .findOne({ 'name': taskNewData.name })
       // .withGraphJoined('labels');

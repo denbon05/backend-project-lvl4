@@ -4,7 +4,7 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { signIn, prepareData } from './helpers/index.js';
+import { prepareData } from './helpers/index.js';
 
 describe('requests', () => {
   let app;
@@ -19,7 +19,6 @@ describe('requests', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    await signIn(app); // * sign in as 1 existing user
   });
 
   it('GET /', async () => {

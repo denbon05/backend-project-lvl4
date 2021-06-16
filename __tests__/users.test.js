@@ -6,12 +6,13 @@ import {
 } from '@jest/globals';
 import getApp from '../server/index.js';
 import encrypt from '../server/lib/secure.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import { getTestData, prepareData, getCookie } from './helpers/index.js';
 
 describe('test users CRUD', () => {
   let app;
   let knex;
   let models;
+  let cookie;
   const testData = getTestData();
 
   const exitedUser = testData.users.existing;
@@ -28,6 +29,7 @@ describe('test users CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
+    cookie = await getCookie(app, testData.users.existing);
   });
 
   it('new', async () => {
@@ -45,6 +47,7 @@ describe('test users CRUD', () => {
       method: 'POST',
       url: app.reverse('users'),
       payload: {
+        cookies: cookie,
         data: params,
       },
     });
@@ -71,37 +74,45 @@ describe('test users CRUD', () => {
   });
 
   it('Permision denied edit user', async () => {
-    await signIn(app);
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editUser', { id: exitedUser2.id }),
+      payload: {
+        cookies: cookie,
+      },
     });
     expect(response.statusCode).toBe(302);
   });
 
   it('Permision denied delete user', async () => {
-    await signIn(app);
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: exitedUser2.id }),
+      payload: {
+        cookies: cookie,
+      },
     });
     expect(response.statusCode).toBe(302);
   });
 
   it('edit own data', async () => {
-    await signIn(app);
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editUser', { id: exitedUser.id }),
+      payload: {
+        cookies: cookie,
+      },
     });
     expect(response.statusCode).toBe(302);
   });
 
   it('delete own account', async () => {
-    await signIn(app);
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: exitedUser.id }),
+      payload: {
+        cookies: cookie,
+      },
     });
     expect(response.statusCode).toBe(302);
   });

@@ -4,11 +4,12 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, signIn } from './helpers/index.js';
+import { getTestData, prepareData, getCookie } from './helpers/index.js';
 
 describe('test statuses CRUD', () => {
   let app;
   let knex;
+  let cookie;
   const testData = getTestData();
 
   beforeAll(async () => {
@@ -20,7 +21,7 @@ describe('test statuses CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    await signIn(app);
+    cookie = await getCookie(app, testData.users.existing)
   });
 
   it('create status', async () => {
@@ -29,6 +30,7 @@ describe('test statuses CRUD', () => {
       method: 'POST',
       url: app.reverse('statuses'),
       payload: {
+        cookies: cookie,
         data: params,
       },
     });
@@ -39,6 +41,7 @@ describe('test statuses CRUD', () => {
       method: 'POST',
       url: app.reverse('statuses'),
       payload: {
+        cookies: cookie,
         data: { name: '' },
       },
     });
@@ -51,6 +54,10 @@ describe('test statuses CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editStatus', { id }),
+      payload: {
+        cookies: cookie,
+        data: { name: '' },
+      },
     });
 
     expect(response.statusCode).toBe(302);
@@ -59,6 +66,7 @@ describe('test statuses CRUD', () => {
       method: 'PATCH',
       url: app.reverse('updateStatus', { id }),
       payload: {
+        cookies: cookie,
         data: { name: 'new status' },
       },
     });
@@ -70,6 +78,9 @@ describe('test statuses CRUD', () => {
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteStatus', { id }),
+      payload: {
+        cookies: cookie,
+      },
     });
 
     expect(response.statusCode).toBe(302);

@@ -4,12 +4,12 @@ import {
   describe, beforeAll, it, expect, afterAll,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { prepareData, signIn } from './helpers/index.js';
+import { prepareData, getCookie, getTestData } from './helpers/index.js';
 
 describe('test session', () => {
   let app;
   let knex;
-  // let testData;
+  let testData;
 
   beforeAll(async () => {
     app = await getApp();
@@ -17,7 +17,7 @@ describe('test session', () => {
     knex = app.objection.knex;
     await knex.migrate.latest();
     await prepareData(app);
-    // testData = getTestData();
+    testData = getTestData();
   });
 
   it('test sign in / sign out', async () => {
@@ -28,15 +28,18 @@ describe('test session', () => {
 
     expect(response.statusCode).toBe(200);
 
-    const responseSignIn = await signIn(app);
-
+    const responseSignIn = await app.inject({
+        method: 'POST',
+        url: app.reverse('session'),
+        payload: {
+          data: getTestData().users.existing,
+        },
+      });
     expect(responseSignIn.statusCode).toBe(302);
     // after successful authentication, we get cookies from the response,
     // they will be needed to execute requests for routes that require
     // pre-authentication
-    const [sessionCookie] = responseSignIn.cookies;
-    const { name, value } = sessionCookie;
-    const cookie = { [name]: value };
+    const cookie = await getCookie(app, testData.users.existing);
 
     const responseSignOut = await app.inject({
       method: 'DELETE',
