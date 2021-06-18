@@ -61,6 +61,7 @@ export default (app) => {
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('req.body.data %O', req.body.data);
+
       const labelIds = req.body.data.labelIds || [];
       try {
         const task = await app.objection.models.task.fromJson({
@@ -77,6 +78,9 @@ export default (app) => {
           }], { relate: ['labels'] });
           logApp('task.$relatedQuery to labels %O', await task.$relatedQuery('labels'));
         });
+        const fromDbTask = await app.objection.models.task
+          .query().findOne({ name: req.body.data.name });
+        logApp('task from DB =>', fromDbTask);
 
         req.flash('info', i18next.t('flash.task.create.success'));
         reply.redirect(app.reverse('tasks'));
@@ -96,6 +100,8 @@ export default (app) => {
           task, users, statuses, labels, errors: err.data,
         });
         return reply.code(422);
+      } finally {
+        logApp('End of handling in "createTask"');
       }
     })
 
@@ -133,8 +139,17 @@ export default (app) => {
 
     .delete('/tasks/:id', {
       name: 'deleteTask',
-      preValidation: app.auth([app.checkIfUserCreatedTask, app.authenticate]),
+      preValidation: app.authenticate,
     }, async (req, reply) => {
+      // logApp('req =>', req)
+      const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
+      logApp('creatorId %O', creatorId);
+      logApp('req.user.id %O', req.user.id);
+      if (req.user.id !== creatorId) {
+        logApp('User is not creator of task');
+        req.flash('error', i18next.t('flash.task.authError'));
+        return reply.redirect('/tasks');
+      }
       await app.objection.models.task.query().deleteById(req.params.id);
       req.flash('info', i18next.t('flash.task.delete.success'));
       reply.redirect(app.reverse('tasks'));

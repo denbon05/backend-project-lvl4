@@ -31,7 +31,7 @@ import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 
-const logApp = debug('task-manager');
+const logApp = debug('app');
 
 dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
@@ -39,16 +39,16 @@ const isProduction = mode === 'production';
 const isDevelopment = mode === 'development';
 logApp('Mode app: %o', mode);
 
-const rollbar = new Rollbar({
-  accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-});
-
 const setUpErrorHandling = (app) => {
+  const rollbar = new Rollbar({
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+
   app.setErrorHandler((err, req, reply) => {
     req.log.error(err);
-    if (isProduction) rollbar.log(err);
+    rollbar.log(err);
     req.flash('error', err.message);
     reply.redirect('/');
   });
@@ -100,7 +100,7 @@ const registerPlugins = (app) => {
   app.register(fastifyReverseRoutes.plugin);
   app.register(fastifyFormbody, { parser: qs.parse });
   app.register(fastifySecureSession, {
-    secret: process.env.SESSION_KEY,
+    secret: process.env.SESSION_KEY || '�!4@�I#Vcۛ�b]��4H՝p2�~�*p',
     cookie: {
       path: '/',
     },
@@ -135,14 +135,6 @@ const registerPlugins = (app) => {
       reply.redirect('/users');
     }
   });
-
-  app.decorate('checkIfUserCreatedTask', async (req, reply) => {
-    const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
-    if (req.user.id !== creatorId) {
-      req.flash('error', i18next.t('flash.task.authError'));
-      reply.redirect('/tasks');
-    }
-  });
 };
 
 const addHooks = (app) => {
@@ -160,16 +152,17 @@ export default () => {
     },
   });
 
+  if (isProduction) setUpErrorHandling(app);
   registerPlugins(app);
-
   setupLocalization();
   setUpViews(app);
   setUpStaticAssets(app);
   addHooks(app);
-  setUpErrorHandling(app);
+
   app.after(() => {
     addRoutes(app);
   });
+  addHooks(app);
 
   return app;
 };

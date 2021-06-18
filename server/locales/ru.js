@@ -54,6 +54,7 @@ export default {
           success: 'Задача успешно удалена',
         },
         showError: 'Нет задачи с такими параметрами',
+        authError: 'Задачу может удалить только её автор',
       },
       labels: {
         create: {

@@ -55,6 +55,7 @@ export default {
           success: 'The task was successfully deleted',
         },
         showError: 'There is no task with these parameters',
+        authError: 'The task can only be deleted by its author',
       },
       labels: {
         create: {

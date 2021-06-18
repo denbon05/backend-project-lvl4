@@ -73,7 +73,7 @@ export default (app) => {
       const label = await app.objection.models.label.query().findById(req.params.id);
       logApp('fetched label %O', label);
       try {
-        await label.$query().update({ ...req.body.data, creatorId: parseInt(req.params.id, 10) });
+        await label.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.labels.update.success'));
         reply.redirect(app.reverse('labels'));
         return reply;

@@ -4,57 +4,75 @@
       "firstName": "Malika",
       "lastName": "Hodkiewich",
       "email": "malika_hodkiewicz75@live.com",
-      "password": "RLJvaIgPOnX5r03"
+      "password": "RLJvaIgPOnX5r03",
+      "id": 32
     },
     "existing": {
       "firstName": "Lawrence",
       "lastName": "Kulas",
       "email": "lawrence.kulas87@outlook.com",
-      "password": "O6AvLIQL1cbzrre"
+      "password": "O6AvLIQL1cbzrre",
+      "id": 7
     },
     "existing2": {
       "firstName": "Nona",
       "lastName": "Murray",
       "email": "nona_murray@yahoo.com",
-      "passwordDigest": "3c1fd781053afcf86f"
+      "passwordDigest": "3c1fd781053afcf86f",
+      "id": 9
     }
   },
 
   "statuses": {
     "new": {
-      "name": "todo"
+      "name": "todo",
+      "id": 5
     },
     "existing": {
-      "name": "in process"
+      "name": "in process",
+      "id": 3
     },
     "existing2": {
-      "name": "finished"
+      "name": "finished",
+      "id": 7
     }
   },
 
   "tasks": {
     "new": {
-      "name": "refacotr",
-      "description": "refactor something",
-      "status": "todo"
+      "name": "Fix bug",
+      "description": "Find and fix bug",
+      "creatorId": 7,
+      "statusId": 7
     },
     "existing": {
       "name": "prepare environment",
-      "description": "deploy environment with specific librares",
-      "status": "finished",
-      "exutor": "Lawrence"
+      "statusId": 7,
+      "creatorId": 7,
+      "executorId": 9,
+      "id": 3
+    },
+    "existing2": {
+      "name": "refactor",
+      "description": "do refactoring",
+      "statusId": 7,
+      "creatorId": 9,
+      "id": 2
     }
   },
 
   "labels": {
     "new": {
-      "name": "label 3"
+      "name": "documentation",
+      "id": 3
     },
     "existing1": {
-      "name": "label 2"
+      "name": "question",
+      "id": 1
     },
     "existing2": {
-      "name": "label 1"
+      "name": "invalid",
+      "id": 2
     }
   }
 }

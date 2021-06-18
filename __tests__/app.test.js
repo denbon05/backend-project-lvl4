@@ -1,23 +1,88 @@
 // @ts-check
 
 import {
-  describe, beforeAll, it, expect, afterAll,
+  describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
+import { prepareData, getCookie, getTestData } from './helpers/index.js';
 
 describe('requests', () => {
   let app;
+  let knex;
+  let cookie;
+  const existedUser = getTestData().users.existing;
 
   beforeAll(async () => {
     app = await getApp();
+    // @ts-ignore
+    knex = app.objection.knex;
   });
 
-  it('GET 200', async () => {
+  beforeEach(async () => {
+    await knex.migrate.latest();
+    await prepareData(app);
+    cookie = await getCookie(app, existedUser);
+  });
+
+  it('GET /', async () => {
     const res = await app.inject({
       method: 'GET',
       url: app.reverse('root'),
     });
     expect(res.statusCode).toBe(200);
+  });
+
+  it('GET /users', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('users'),
+    });
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('GET /statuses', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses'),
+    });
+    expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
+  });
+
+  it('GET /tasks', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('tasks'),
+    });
+    expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('tasks'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
+  });
+
+  it('GET /labels', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('labels'),
+    });
+    expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('labels'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
   });
 
   it('GET 404', async () => {
@@ -26,6 +91,10 @@ describe('requests', () => {
       url: '/wrong-path',
     });
     expect(res.statusCode).toBe(404);
+  });
+
+  afterEach(async () => {
+    await knex.migrate.rollback(); // * rollback migrations
   });
 
   afterAll(() => {

@@ -1,6 +1,9 @@
 // @ts-check
 
 import i18next from 'i18next';
+import debug from 'debug';
+
+const logApp = debug('app:routes:session');
 
 export default (app) => {
   app
@@ -8,6 +11,7 @@ export default (app) => {
       const signInForm = {};
       reply.render('session/new', { signInForm });
     })
+
     .post('/session', { name: 'session' }, app.fp.authenticate('form', async (req, reply, err, user) => {
       if (err) return app.httpErrors.internalServerError(err);
       if (!user) {
@@ -18,9 +22,11 @@ export default (app) => {
         return reply.render('session/new', { signInForm, errors });
       }
       await req.logIn(user);
+      logApp('User is logined');
       req.flash('success', i18next.t('flash.session.create.success'));
       return reply.redirect(app.reverse('root'));
     }))
+
     .delete('/session', (req, reply) => {
       req.logOut();
       req.flash('info', i18next.t('flash.session.delete.success'));

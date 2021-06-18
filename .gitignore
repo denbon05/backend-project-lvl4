@@ -3,4 +3,4 @@ dist
 coverage
 .env
 temp.js
-*.txt
+*logs*
