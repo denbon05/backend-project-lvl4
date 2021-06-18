@@ -26,15 +26,15 @@
   "statuses": {
     "new": {
       "name": "todo",
-      "id": 3
+      "id": 5
     },
     "existing": {
       "name": "in process",
-      "id": 7
+      "id": 3
     },
     "existing2": {
       "name": "finished",
-      "id": 5
+      "id": 7
     }
   },
 
@@ -42,23 +42,21 @@
     "new": {
       "name": "Fix bug",
       "description": "Find and fix bug",
-      "statusId": 7,
-      "executorId": 9,
       "creatorId": 7,
-      "id": 12
+      "statusId": 7
     },
     "existing": {
       "name": "prepare environment",
       "statusId": 7,
-      "creatorId": 9,
-      "executorId": 2,
+      "creatorId": 7,
+      "executorId": 9,
       "id": 3
     },
     "existing2": {
       "name": "refactor",
       "description": "do refactoring",
       "statusId": 7,
-      "creatorId": 7,
+      "creatorId": 9,
       "id": 2
     }
   },

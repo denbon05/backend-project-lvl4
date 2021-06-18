@@ -3,8 +3,11 @@
 import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
+import { omit } from 'lodash';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, getCookie } from './helpers/index.js';
+import {
+  getTestData, prepareData, getCookie,
+} from './helpers/index.js';
 
 describe('test relations CRUD', () => {
   let app;
@@ -12,6 +15,11 @@ describe('test relations CRUD', () => {
   let models;
   let cookie;
   const testData = getTestData();
+
+  let taskNewData;
+  let existingStatus;
+  let existingUser;
+  let existingLabel;
 
   beforeAll(async () => {
     app = await getApp();
@@ -24,36 +32,69 @@ describe('test relations CRUD', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    cookie = await getCookie(app, testData.users.existing)
-  });
+    cookie = await getCookie(app, testData.users.existing);
+    taskNewData = testData.tasks.new;
+    existingStatus = testData.statuses.existing;
+    existingUser = testData.users.existing;
+    existingLabel = testData.labels.existing1;
 
-  it('Create task with relations: labels, statuses, executor', async () => {
-    const taskNewData = testData.tasks.new;
-    const response = await app.inject({
+    await app.inject({
       method: 'POST',
       url: app.reverse('createTask'),
+      cookies: cookie,
       payload: {
         data: {
-          cookies: cookie,
           ...taskNewData,
-          labelIds: [1, 2],
+          statusId: existingStatus.id,
+          executorId: existingUser.id,
+          labelIds: existingLabel.id,
         },
       },
     });
-    // console.log("response ->>", response.statusCode);
-    console.log('taskData ->>', taskNewData);
+  });
 
-    const task = await models.task // ? не добавилась новая задача
-      .query();
-      // .findOne({ 'name': taskNewData.name })
-      // .withGraphJoined('labels');
+  it('Tasks relations with labels, statuses, executor', async () => {
+    const task = await models.task
+      .query()
+      .findOne({ 'tasks.name': taskNewData.name })
+      .withGraphJoined('labels');
 
-    console.log('task ->>', task);
-    // console.log('labels ->>', task.labels);
+    expect(task.labels[0].id).toEqual(existingLabel.id);
+    expect(task.statusId).toEqual(existingStatus.id);
+    expect(task.executorId).toEqual(existingUser.id);
+  });
 
-    // const newTask = await models.task.query().findOne({ 'tasks.name': taskData.name });
-    // console.log('new task ->>', newTask);
-    expect(response.statusCode).toBe(302);
+  it("Can't delete statuse dependent on task", async () => {
+    await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteStatus', { id: existingStatus.id }),
+      cookies: cookie,
+    });
+
+    const status = await models.taskStatus.query().findById(existingStatus.id);
+    expect(status).toMatchObject(existingStatus);
+  });
+
+  it("Can't delete user dependent on task", async () => {
+    await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteUser', { id: existingUser.id }), // own account
+      cookies: cookie,
+    });
+
+    const user = await models.user.query().findById(existingUser.id);
+    expect(user).toMatchObject(omit(existingUser, 'password'));
+  });
+
+  it("Can't delete label dependent on task", async () => {
+    await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteLabel', { id: existingLabel.id }),
+      cookies: cookie,
+    });
+
+    const label = await models.label.query().findById(existingLabel.id);
+    expect(label).toMatchObject(existingLabel);
   });
 
   afterEach(async () => {

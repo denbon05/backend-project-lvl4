@@ -29,12 +29,12 @@ describe('test session', () => {
     expect(response.statusCode).toBe(200);
 
     const responseSignIn = await app.inject({
-        method: 'POST',
-        url: app.reverse('session'),
-        payload: {
-          data: getTestData().users.existing,
-        },
-      });
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: {
+        data: getTestData().users.existing,
+      },
+    });
     expect(responseSignIn.statusCode).toBe(302);
     // after successful authentication, we get cookies from the response,
     // they will be needed to execute requests for routes that require

@@ -21,8 +21,8 @@ export default (app) => {
         };
         return reply.render('session/new', { signInForm, errors });
       }
-      const logInUser = await req.logIn(user);
-      logApp('logInUser %O', logInUser);
+      await req.logIn(user);
+      logApp('User is logined');
       req.flash('success', i18next.t('flash.session.create.success'));
       return reply.redirect(app.reverse('root'));
     }))

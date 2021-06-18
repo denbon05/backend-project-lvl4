@@ -29,7 +29,7 @@ import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 
-const logApp = debug('task-manager');
+const logApp = debug('app');
 
 dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
@@ -116,14 +116,6 @@ const registerPlugins = (app) => {
     if (req.user?.id !== parseInt(req.params.id, 10)) {
       req.flash('error', i18next.t('flash.users.authError'));
       reply.redirect('/users');
-    }
-  });
-
-  app.decorate('checkIfUserCreatedTask', async (req, reply) => {
-    const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
-    if (req.user.id !== creatorId) {
-      req.flash('error', i18next.t('flash.task.authError'));
-      reply.redirect('/tasks');
     }
   });
 };

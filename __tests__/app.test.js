@@ -4,11 +4,13 @@ import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { prepareData } from './helpers/index.js';
+import { prepareData, getCookie, getTestData } from './helpers/index.js';
 
 describe('requests', () => {
   let app;
   let knex;
+  let cookie;
+  const existedUser = getTestData().users.existing;
 
   beforeAll(async () => {
     app = await getApp();
@@ -19,6 +21,7 @@ describe('requests', () => {
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
+    cookie = await getCookie(app, existedUser);
   });
 
   it('GET /', async () => {
@@ -34,7 +37,6 @@ describe('requests', () => {
       method: 'GET',
       url: app.reverse('users'),
     });
-
     expect(response.statusCode).toBe(200);
   });
 
@@ -43,8 +45,14 @@ describe('requests', () => {
       method: 'GET',
       url: app.reverse('statuses'),
     });
-
     expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
   });
 
   it('GET /tasks', async () => {
@@ -52,8 +60,14 @@ describe('requests', () => {
       method: 'GET',
       url: app.reverse('tasks'),
     });
-
     expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('tasks'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
   });
 
   it('GET /labels', async () => {
@@ -61,8 +75,14 @@ describe('requests', () => {
       method: 'GET',
       url: app.reverse('labels'),
     });
-
     expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('labels'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
   });
 
   it('GET 404', async () => {

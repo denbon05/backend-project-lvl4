@@ -42,22 +42,22 @@ describe('test users CRUD', () => {
   });
 
   it('create', async () => {
-    const params = testData.users.new;
+    const newUserData = testData.users.new;
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('users'),
+      cookies: cookie,
       payload: {
-        cookies: cookie,
-        data: params,
+        data: newUserData,
       },
     });
     expect(response.statusCode).toBe(302);
 
     const expected = {
-      ..._.omit(params, 'password'),
-      passwordDigest: encrypt(params.password),
+      ..._.omit(newUserData, 'password'),
+      passwordDigest: encrypt(newUserData.password),
     };
-    const user = await models.user.query().findOne({ email: params.email });
+    const user = await models.user.query().findOne({ email: newUserData.email });
     expect(user).toMatchObject(expected);
   });
 
@@ -66,6 +66,7 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('users'),
+      cookies: cookie,
       payload: {
         data: existing,
       },
@@ -77,9 +78,7 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editUser', { id: exitedUser2.id }),
-      payload: {
-        cookies: cookie,
-      },
+      cookies: cookie,
     });
     expect(response.statusCode).toBe(302);
   });
@@ -88,9 +87,7 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: exitedUser2.id }),
-      payload: {
-        cookies: cookie,
-      },
+      cookies: cookie,
     });
     expect(response.statusCode).toBe(302);
   });
@@ -99,22 +96,45 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editUser', { id: exitedUser.id }),
+      cookies: cookie,
+    });
+    expect(response.statusCode).toBe(200);
+
+    const newData = {
+      firstName: 'Napoleon',
+      lastName: 'Bonaparte',
+      email: 'war@di.com',
+      password: 'password',
+    };
+
+    const response2 = await app.inject({
+      method: 'PATCH',
+      url: app.reverse('updateUserData', { id: exitedUser.id }),
+      cookies: cookie,
       payload: {
-        cookies: cookie,
+        data: newData,
       },
     });
-    expect(response.statusCode).toBe(302);
+    expect(response2.statusCode).toBe(302);
+
+    const userData = await models.user.query().findById(exitedUser.id);
+    const expected = {
+      ..._.omit(newData, 'password'),
+      passwordDigest: encrypt(newData.password),
+    };
+    expect(userData).toMatchObject(expected);
   });
 
   it('delete own account', async () => {
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: exitedUser.id }),
-      payload: {
-        cookies: cookie,
-      },
+      cookies: cookie,
     });
     expect(response.statusCode).toBe(302);
+
+    const user = await models.user.query().findById(exitedUser.id);
+    expect(user).toBeUndefined();
   });
 
   afterEach(async () => {
