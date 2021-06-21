@@ -69,9 +69,10 @@ export default (app) => {
         reply.redirect(app.reverse('statuses'));
         return reply;
       } catch (err) {
+        logApp('PATCH error %O', err);
         req.flash('error', i18next.t('flash.status.update.error'));
-        reply.render('statuses/edit', { status, errors: err.data });
-        return reply.code(422); // ? not working in tests
+        reply.render('statuses/edit', { status: { ...status, ...req.body.data }, errors: err.data });
+        return reply.code(422);
       }
     });
 };

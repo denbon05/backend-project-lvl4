@@ -57,7 +57,7 @@ export default (app) => {
       } catch (err) {
         logApp('patch error %O', err);
         req.flash('error', i18next.t('flash.users.update.error'));
-        reply.render('users/edit', { user, errors: err.data });
+        reply.render('users/edit', { user: { ...user, ...req.body.data }, errors: err.data });
         return reply.code(422);
       }
     })

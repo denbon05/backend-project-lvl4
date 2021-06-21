@@ -51,12 +51,13 @@ mixin buttonTo(action, method)
     input(type='submit')&attributes(attributes)
 
 mixin select(entity, propertyName, errors = {}, items, multiple = false)
+  - log('propertyName %O', propertyName)
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (!propertyErrors ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
-  - log('field name %O', name)
+  - log('entityName %O', entityName)
   - selectedOptions = entity[normalizeName(propertyName)] ? [entity[normalizeName(propertyName)]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
   .form-group
     label(for=inputId)= t(`views.${entityName}s.${propertyName}`)
@@ -74,9 +75,11 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
-mixin filterSelect(entity, propertyName, items)
+mixin filterSelect(entity, propertyName, items, query)
   - classLine = 'form-control ml-2 mr-3'
   - inputId = getInputId(propertyName)
+  - log('query & propertyName %O', query, propertyName)
+  - log('isSelect %O', Boolean(query[propertyName]))
   .form-group 
     label(for=inputId)= t(`views.filters.${propertyName}`)
     select.form-control(
@@ -87,7 +90,7 @@ mixin filterSelect(entity, propertyName, items)
       )
       option(selected= true)
       each item in items 
-        - isSelect = _.includes(selectedOptions, item.id)
+        - isSelect = Boolean(query[propertyName])
         option(value=item.id, selected= isSelect)= item.name
 
 mixin checkbox(entity, propertyName)

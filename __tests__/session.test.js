@@ -1,10 +1,8 @@
-// @ts-check
-
 import {
   describe, beforeAll, it, expect, afterAll,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { prepareData, getCookie, getTestData } from './helpers/index.js';
+import { prepareData, signIn, getTestData } from './helpers/index.js';
 
 describe('test session', () => {
   let app;
@@ -13,21 +11,22 @@ describe('test session', () => {
 
   beforeAll(async () => {
     app = await getApp();
-    // @ts-ignore
     knex = app.objection.knex;
     await knex.migrate.latest();
     await prepareData(app);
     testData = getTestData();
   });
 
-  it('test sign in / sign out', async () => {
+  it('GET /session/new', async () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newSession'),
     });
 
     expect(response.statusCode).toBe(200);
+  });
 
+  it('POST /session', async () => {
     const responseSignIn = await app.inject({
       method: 'POST',
       url: app.reverse('session'),
@@ -36,15 +35,14 @@ describe('test session', () => {
       },
     });
     expect(responseSignIn.statusCode).toBe(302);
-    // after successful authentication, we get cookies from the response,
-    // they will be needed to execute requests for routes that require
-    // pre-authentication
-    const cookie = await getCookie(app, testData.users.existing);
+  });
+
+  it('DELETE /session', async () => {
+    const cookie = await signIn(app, testData.users.existing);
 
     const responseSignOut = await app.inject({
       method: 'DELETE',
       url: app.reverse('session'),
-      // we use previously received cookies
       cookies: cookie,
     });
 
