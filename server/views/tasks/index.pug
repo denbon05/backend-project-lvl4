@@ -4,9 +4,9 @@ block content
   a.nav-link(href=route('newTask'))= t('views.tasks.create')
   .jumbotron.p-2
     +formFor()(action=route('tasks') method='get' class="form-inline")
-      +filterSelect('task', 'status', statuses)
-      +filterSelect('task', 'executor', users)
-      +filterSelect('task', 'label', labels)
+      +filterSelect('task', 'status', statuses, query)
+      +filterSelect('task', 'executor', users, query)
+      +filterSelect('task', 'label', labels, query)
       +checkbox('task','isCreatorUser')
       +submit()(value=t('views.tasks.filter'))
   table.table.table-striped

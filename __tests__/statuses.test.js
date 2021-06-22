@@ -1,12 +1,10 @@
-// @ts-check
-
 import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
 import getApp from '../server/index.js';
-import { getTestData, prepareData, getCookie } from './helpers/index.js';
+import { getTestData, prepareData, signIn } from './helpers/index.js';
 
-describe('test statuses CRUD', () => {
+describe('statuses CRUD', () => {
   let app;
   let knex;
   let models;
@@ -15,55 +13,67 @@ describe('test statuses CRUD', () => {
 
   beforeAll(async () => {
     app = await getApp();
-    // @ts-ignore
     knex = app.objection.knex;
-    // @ts-ignore
     models = app.objection.models;
   });
 
   beforeEach(async () => {
     await knex.migrate.latest();
     await prepareData(app);
-    cookie = await getCookie(app, testData.users.existing);
+    cookie = await signIn(app, testData.users.existing);
   });
 
-  it('create status', async () => {
+  it('GET /statuses', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses'),
+    });
+    expect(response.statusCode).toBe(302);
+
+    const response2 = await app.inject({
+      method: 'GET',
+      url: app.reverse('statuses'),
+      cookies: cookie,
+    });
+    expect(response2.statusCode).toBe(200);
+  });
+
+  it('GET new status', async () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newStatus'),
       cookies: cookie,
     });
     expect(response.statusCode).toBe(200);
+  });
 
-    const newStatusData = testData.statuses.new;
-    const response2 = await app.inject({
+  it('POST new status', async () => {
+    const updatedData = testData.statuses.new;
+    const response = await app.inject({
       method: 'POST',
       url: app.reverse('statusCreate'),
       cookies: cookie,
       payload: {
-        data: newStatusData,
+        data: updatedData,
       },
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
-    const status = await models.taskStatus.query().findById(newStatusData.id);
-    expect(status).toMatchObject(newStatusData);
-    /* eslint-disable */
-    for (const data of [{ name: '' }, { name: testData.statuses.existing.name }]) {
-      const response3 = await app.inject({
-        method: 'POST',
-        url: app.reverse('statuses'),
-        cookies: cookie,
-        payload: {
-          data, // empty field and the same name
-        },
-      });
-      expect(response3.statusCode).toBe(422);
-    }
-    /* eslint-enable */
+    const status = await models.taskStatus.query().findById(updatedData.id);
+    expect(status).toMatchObject(updatedData);
+
+    const response2 = await app.inject({
+      method: 'POST',
+      url: app.reverse('statuses'),
+      cookies: cookie,
+      payload: {
+        data: { name: testData.statuses.existing.name },
+      },
+    });
+    expect(response2.statusCode).toBe(422);
   });
 
-  it('edit status', async () => {
+  it('GET edit status', async () => {
     const { id } = testData.statuses.existing;
     const response = await app.inject({
       method: 'GET',
@@ -71,34 +81,36 @@ describe('test statuses CRUD', () => {
       cookies: cookie,
     });
     expect(response.statusCode).toBe(200);
+  });
 
-    const newStatusData = { name: 'new status' };
-
+  it('PATCH status', async () => {
+    const { id } = testData.statuses.existing;
+    const updatedData = { name: 'new status' };
     const response2 = await app.inject({
       method: 'PATCH',
       url: app.reverse('updateStatus', { id }),
       cookies: cookie,
       payload: {
-        data: newStatusData,
+        data: updatedData,
       },
     });
     expect(response2.statusCode).toBe(302);
 
     const status = await models.taskStatus.query().findById(id);
-    expect(status).toMatchObject(newStatusData);
+    expect(status).toMatchObject(updatedData);
   });
 
   it('delete status', async () => {
-    const { existing: independentStatus } = testData.statuses;
+    const { existing } = testData.statuses;
 
     const response2 = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteStatus', { id: independentStatus.id }),
+      url: app.reverse('deleteStatus', { id: existing.id }),
       cookies: cookie,
     });
     expect(response2.statusCode).toBe(302);
 
-    const status2 = await models.taskStatus.query().findById(independentStatus.id);
+    const status2 = await models.taskStatus.query().findById(existing.id);
     expect(status2).toBeUndefined();
   });
 

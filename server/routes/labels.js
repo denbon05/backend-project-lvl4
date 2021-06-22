@@ -78,10 +78,10 @@ export default (app) => {
         reply.redirect(app.reverse('labels'));
         return reply;
       } catch (err) {
-        logApp('updateLabel error %O', err);
+        logApp('updateLabel error %O', err.message);
         if (!(err instanceof ValidationError)) throw err;
         req.flash('error', i18next.t('flash.labels.update.error'));
-        reply.render('tasks/edit', { label, errors: err.data });
+        reply.render('labels/edit', { label: { ...label, ...req.body.data }, errors: err.data });
         return reply.code(422);
       }
     });

@@ -1,13 +1,13 @@
-// @ts-check
-
 import i18next from 'i18next';
 import debug from 'debug';
+import { omit } from 'lodash';
 import { ValidationError } from 'objection';
 
 const logApp = debug('app:routes:tasks');
 
 const parseTaskData = (data) => Object.entries(data)
   .reduce((acc, [key, value]) => {
+    logApp('key & value %O', key, ' = ', value);
     if ((key.match('executorId') && !value) || key.match('labelIds')) return acc;
     if (key.match(/id/gi)) return { ...acc, ...(value && { [key]: parseInt(value, 10) }) };
     return { ...acc, [key]: value };
@@ -39,6 +39,7 @@ export default (app) => {
         users,
         statuses,
         labels,
+        query: req.query,
       });
       return reply;
     })
@@ -141,7 +142,6 @@ export default (app) => {
       name: 'deleteTask',
       preValidation: app.authenticate,
     }, async (req, reply) => {
-      // logApp('req =>', req)
       const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
       logApp('creatorId %O', creatorId);
       logApp('req.user.id %O', req.user.id);
@@ -160,13 +160,15 @@ export default (app) => {
       logApp('updateTask req.params %O', req.params);
       const labelIds = req.body.data.labelIds ?? [];
       logApp('updateTask req.body.data %O', req.body.data);
+      const oldTask = await app.objection.models.task.query().findById(req.params.id);
+      logApp('in PATCH oldTask %O', oldTask);
       try {
         await app.objection.models.task.transaction(async (trx) => {
-          await app.objection.models.task.query(trx).upsertGraph({
-            id: Number(req.params.id),
+          await app.objection.models.task.query(trx).update({
+            ...(parseTaskData(omit(oldTask, ['name', 'statusId', 'description']))),
             ...(parseTaskData(req.body.data)),
             labels: [labelIds].flat().map((id) => ({ id: parseInt(id, 10) })),
-          }, { relate: true, unrelate: true });
+          }).where('id', req.params.id);
         });
         req.flash('info', i18next.t('flash.task.update.success'));
         reply.redirect(app.reverse('tasks'));
@@ -178,8 +180,9 @@ export default (app) => {
         const [task, users, statuses, labels] = await Promise.all([
           app.objection.models.task.query().findById(req.params.id),
           app.objection.models.user.query(),
-          app.objection.models.status.query(),
+          app.objection.models.taskStatus.query(),
           app.objection.models.label.query()]);
+
         reply.render('tasks/edit', {
           task,
           users,

@@ -103,6 +103,8 @@ const registerPlugins = (app) => {
     secret: process.env.SESSION_KEY || '�!4@�I#Vcۛ�b]��4H՝p2�~�*p',
     cookie: {
       path: '/',
+      // sameSite: 'none', // ! https://drive.google.com/file/d/13DvwmvoVtqJOB_6mbyhfn1mD-KVTZqXO/view?usp=sharing
+      // secure: true,
     },
   });
 
