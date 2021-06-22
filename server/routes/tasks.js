@@ -17,7 +17,7 @@ export default (app) => {
   app
     .get('/tasks', { name: 'tasks', preValidation: app.authenticate }, async (req, reply) => {
       const { query, user: { id } } = req;
-      logApp('.get tasks req.query %O', req.query);
+      logApp('GET tasks req.query %O', req.query);
 
       const tasksQuery = app.objection.models.task.query()
         .withGraphJoined('[creator, executor, status, labels]');
@@ -61,7 +61,7 @@ export default (app) => {
     })
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
-      logApp('req.body.data %O', req.body.data);
+      logApp('POST req.body.data %O', req.body.data);
 
       const labelIds = req.body.data.labelIds || [];
       try {
@@ -97,6 +97,10 @@ export default (app) => {
           app.objection.models.taskStatus.query(),
           app.objection.models.label.query(),
         ]);
+
+        logApp('POST in  catch task %O', task);
+        logApp('POST in  catch labels %O', labels);
+
         reply.render(app.reverse('newTask'), {
           task, users, statuses, labels, errors: err.data,
         });
@@ -177,11 +181,19 @@ export default (app) => {
         logApp('updateTask error %O', err);
         if (!(err instanceof ValidationError)) throw err;
         req.flash('error', i18next.t('flash.task.update.error'));
+        const tasksQuery = app.objection.models.task
+          .query().findById(req.params.id).withGraphJoined('[creator, executor, status, labels]');
         const [task, users, statuses, labels] = await Promise.all([
-          app.objection.models.task.query().findById(req.params.id),
+          tasksQuery,
           app.objection.models.user.query(),
           app.objection.models.taskStatus.query(),
           app.objection.models.label.query()]);
+
+        task.name = req.body.data.name;
+        task.description = req.body.data.description;
+
+        logApp('PATCH in  catch task %O', task);
+        logApp('PATCH in  catch labels %O', labels);
 
         reply.render('tasks/edit', {
           task,

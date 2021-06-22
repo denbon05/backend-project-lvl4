@@ -2,6 +2,7 @@
 
 import i18next from 'i18next';
 import debug from 'debug';
+import { omit } from 'lodash';
 
 const logApp = debug('app:routes:users');
 
@@ -49,6 +50,7 @@ export default (app) => {
       const { id } = req.params;
       logApp('patch req.body.data-> %O', req.body.data);
       const user = await app.objection.models.user.query().findById(id);
+      logApp('patch user from db %O', user);
       try {
         await user.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.users.update.success'));
@@ -57,7 +59,11 @@ export default (app) => {
       } catch (err) {
         logApp('patch error %O', err);
         req.flash('error', i18next.t('flash.users.update.error'));
-        reply.render('users/edit', { user: { ...user, ...req.body.data }, errors: err.data });
+        logApp('patch error omited user %O', omit(user, ['passwordDigest', 'email']));
+        reply.render('users/edit', {
+          user: { ...omit(user, ['passwordDigest', 'email']), ...req.body.data },
+          errors: err.data,
+        }); // without ['passwordDigest', 'email'] also showing password and email ?
         return reply.code(422);
       }
     })

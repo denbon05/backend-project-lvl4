@@ -1,5 +1,3 @@
-// @ts-check
-
 import debug from 'debug';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -19,14 +17,10 @@ import pointOfView from 'point-of-view';
 import Pug from 'pug';
 import i18next from 'i18next';
 import Rollbar from 'rollbar';
-
-// @ts-ignore
 import webpackConfig from '../webpack.config.babel.js';
 import resources from './locales/index.js';
-
 import addRoutes from './routes/index.js';
 import getHelpers from './helpers/index.js';
-// @ts-ignore
 import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
@@ -103,8 +97,6 @@ const registerPlugins = (app) => {
     secret: process.env.SESSION_KEY || '�!4@�I#Vcۛ�b]��4H՝p2�~�*p',
     cookie: {
       path: '/',
-      // sameSite: 'none', // ! https://drive.google.com/file/d/13DvwmvoVtqJOB_6mbyhfn1mD-KVTZqXO/view?usp=sharing
-      // secure: true,
     },
   });
 
