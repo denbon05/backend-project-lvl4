@@ -27,15 +27,10 @@ describe('statuses CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('statuses'),
-    });
-    expect(response.statusCode).toBe(302);
-
-    const response2 = await app.inject({
-      method: 'GET',
-      url: app.reverse('statuses'),
       cookies: cookie,
     });
-    expect(response2.statusCode).toBe(200);
+
+    expect(response.statusCode).toBe(200);
   });
 
   it('GET new status', async () => {
@@ -44,6 +39,7 @@ describe('statuses CRUD', () => {
       url: app.reverse('newStatus'),
       cookies: cookie,
     });
+
     expect(response.statusCode).toBe(200);
   });
 
@@ -59,7 +55,7 @@ describe('statuses CRUD', () => {
     });
     expect(response.statusCode).toBe(302);
 
-    const status = await models.taskStatus.query().findById(updatedData.id);
+    const status = await models.taskStatus.query().findOne({ name: updatedData.name });
     expect(status).toMatchObject(updatedData);
 
     const response2 = await app.inject({

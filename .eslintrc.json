@@ -13,6 +13,7 @@
     "rules": {
 			"no-console": 0,
 			"import/extensions": 0,
+			"new-cap": ["error", { "newIsCap": false }],
 			"no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"]
     }
 }

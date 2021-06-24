@@ -33,6 +33,7 @@ describe('users CRUD', () => {
       method: 'GET',
       url: app.reverse('users'),
     });
+
     expect(response.statusCode).toBe(200);
   });
 
@@ -68,16 +69,17 @@ describe('users CRUD', () => {
   it('Permision denied edit user', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('editUser', { id: exitedUser2.id }),
+      url: app.reverse('editUser', { id: exitedUser2.id }), // foreign account
       cookies: cookie,
     });
+
     expect(response.statusCode).toBe(302);
   });
 
   it('Permision denied delete user', async () => {
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteUser', { id: exitedUser2.id }),
+      url: app.reverse('deleteUser', { id: exitedUser2.id }), // foreign account
       cookies: cookie,
     });
     expect(response.statusCode).toBe(302);

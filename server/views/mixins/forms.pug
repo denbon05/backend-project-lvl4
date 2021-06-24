@@ -1,6 +1,6 @@
 - const getInputName = (property) => `data[${property}]`
 - const getInputId = (property) => `data_${property}`
-- const normalizedName = (name) => name.match('labelIds') ? 'labels' : name
+- const getLengthCount = (err) => (err.message.match(/\d+/) && err.message.match(/\d+/)[0]) || ''
 
 mixin formFor(entity = null)
   form&attributes(attributes)
@@ -21,7 +21,8 @@ mixin input(entity, propertyName, errors = {}, showPropertyName = true)
       value=_.get(entity, propertyName, '')
     )&attributes(attributes)
     if !_.isEmpty(propertyErrors)
-      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+      - propertyErrors.forEach((err) => - log('getLengthCount(err) %O', getLengthCount(err)))
+      .invalid-feedback= propertyErrors.map((err) => t(`errors.${err.keyword}`, { count: getLengthCount(err) })).join('. ')
 
 mixin textarea(entity, propertyName, errors = {})
   - propertyErrors = _.get(errors, propertyName)
@@ -58,7 +59,7 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
   - log('entityName %O', entityName)
-  - selectedOptions = entity[normalizedName(propertyName)] ? [entity[normalizedName(propertyName)]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
+  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
   - log('selectedOptions %O', selectedOptions)
   .form-group
     label(for=inputId)= t(`views.${entityName}s.${propertyName}`)

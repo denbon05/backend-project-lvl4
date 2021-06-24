@@ -4,8 +4,7 @@
       "firstName": "Malika",
       "lastName": "Hodkiewich",
       "email": "malika_hodkiewicz75@live.com",
-      "password": "RLJvaIgPOnX5r03",
-      "id": 32
+      "password": "RLJvaIgPOnX5r03"
     },
     "existing": {
       "firstName": "Lawrence",
@@ -25,8 +24,7 @@
 
   "statuses": {
     "new": {
-      "name": "todo",
-      "id": 5
+      "name": "todo"
     },
     "existing": {
       "name": "in process",
@@ -63,8 +61,7 @@
 
   "labels": {
     "new": {
-      "name": "documentation",
-      "id": 3
+      "name": "documentation"
     },
     "existing": {
       "name": "question",

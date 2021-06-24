@@ -15,23 +15,24 @@ export default (app) => {
     })
 
     .get('/users/new', { name: 'newUser' }, (req, reply) => {
-      const user = new app.objection.models.user(); // eslint-disable-line
+      const user = new app.objection.models.user();
       reply.render('users/new', { user });
     })
 
-    .post('/users', async (req, reply) => { // ?
+    .post('/users', async (req, reply) => {
       try {
         const user = await app.objection.models.user.fromJson(req.body.data);
         await app.objection.models.user.query().insert(user);
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
-        return reply;
-      } catch (err) {
-        logApp('post error %O', err);
+      } catch ({ data }) {
+        logApp('post error.data %O', data);
+        logApp('POST users req.body.data %O', req.body.data);
         req.flash('error', i18next.t('flash.users.create.error'));
-        reply.render('users/new', { user: req.body.data, errors: err.data });
-        return reply.code(403);
+        reply.render('users/new', { user: req.body.data, errors: data });
+        reply.code(403);
       }
+      return reply;
     })
 
     .get('/users/:id/edit', {
@@ -55,17 +56,17 @@ export default (app) => {
         await user.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.users.update.success'));
         reply.redirect(app.reverse('users'));
-        return reply;
-      } catch (err) {
-        logApp('patch error %O', err);
+      } catch ({ data }) {
+        logApp('patch error.data %O', data);
         req.flash('error', i18next.t('flash.users.update.error'));
         logApp('patch error omited user %O', omit(user, ['passwordDigest', 'email']));
         reply.render('users/edit', {
           user: { ...omit(user, ['passwordDigest', 'email']), ...req.body.data },
-          errors: err.data,
-        }); // without ['passwordDigest', 'email'] also showing password and email ?
-        return reply.code(422);
+          errors: data,
+        });
+        reply.code(422);
       }
+      return reply;
     })
 
     .delete('/users/:id', {
@@ -75,11 +76,14 @@ export default (app) => {
       const tasks = await app.objection.models.task.query().where('executorId', req.params.id);
       if (tasks.length > 0) {
         req.flash('error', i18next.t('flash.users.delete.error'));
-        return reply.redirect('/users');
+        reply.redirect('/users');
+      } else {
+        req.logOut();
+        await app.objection.models.user.query().deleteById(req.params.id);
+        req.flash('info', i18next.t('flash.users.delete.success'));
+        reply.redirect(app.reverse('users'));
       }
-      req.logOut();
-      await app.objection.models.user.query().deleteById(req.params.id);
-      req.flash('info', i18next.t('flash.users.delete.success'));
-      return reply.redirect(app.reverse('users'));
+
+      return reply;
     });
 };

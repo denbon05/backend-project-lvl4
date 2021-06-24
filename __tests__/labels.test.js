@@ -26,31 +26,20 @@ describe('labels CRUD', () => {
   it('GET /labels', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('labels'),
-    });
-    expect(response.statusCode).toBe(302);
-
-    const response2 = await app.inject({
-      method: 'GET',
-      url: app.reverse('labels'),
       cookies: cookie,
+      url: app.reverse('labels'),
     });
-    expect(response2.statusCode).toBe(200);
+    expect(response.statusCode).toBe(200);
   });
 
   it('GET create label', async () => {
-    const newLabel = testData.labels.new;
-
-    const getNewLabelsResponse = await app.inject({
+    const response = await app.inject({
       method: 'GET',
       url: app.reverse('newLabel'),
       cookies: cookie,
-      payload: {
-        data: newLabel,
-      },
     });
 
-    expect(getNewLabelsResponse.statusCode).toBe(200);
+    expect(response.statusCode).toBe(200);
   });
 
   it('POST new label', async () => {
@@ -67,7 +56,7 @@ describe('labels CRUD', () => {
 
     expect(response.statusCode).toBe(302);
 
-    const label = await models.label.query().findById(newLabel.id);
+    const label = await models.label.query().findOne({ name: newLabel.name });
     expect(label).toMatchObject(newLabel);
   });
 
@@ -80,7 +69,7 @@ describe('labels CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('update label', async () => {
+  it('PATCH label', async () => {
     const updatedData = { name: 'wontfix' };
     const response2 = await app.inject({
       method: 'PATCH',

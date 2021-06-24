@@ -83,6 +83,9 @@ const setupLocalization = () => {
       fallbackLng: 'ru',
       debug: false,
       resources,
+      interpolation: {
+        escapeValue: false,
+      },
     });
 };
 

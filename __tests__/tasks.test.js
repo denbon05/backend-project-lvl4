@@ -51,36 +51,26 @@ describe('tasks CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('tasks'),
-    });
-    expect(response.statusCode).toBe(302);
-
-    const response2 = await app.inject({
-      method: 'GET',
-      url: app.reverse('tasks'),
       cookies: cookie,
     });
-    expect(response2.statusCode).toBe(200);
+
+    expect(response.statusCode).toBe(200);
   });
 
   it('GET /tasks/new', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('newTask'),
-    });
-    expect(response.statusCode).toBe(302);
-
     const response2 = await app.inject({
       method: 'GET',
       url: app.reverse('newTask'),
       cookies: cookie,
     });
+
     expect(response2.statusCode).toBe(200);
   });
 
   it('POST /tasks', async () => {
-    const updatedTaskData = testData.tasks.new; // удалил в testData.tasks.existing.id
-    const response = await app.inject({ // с id возникает ошибка:
-      method: 'POST', // "Error: Timeout - Async callback was not invoked within the 5000 ms"
+    const updatedTaskData = testData.tasks.new;
+    const response = await app.inject({
+      method: 'POST',
       url: app.reverse('createTask'),
       cookies: cookie,
       payload: {

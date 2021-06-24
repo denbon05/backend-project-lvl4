@@ -1,13 +1,11 @@
 import i18next from 'i18next';
 import debug from 'debug';
 import { omit } from 'lodash';
-import { ValidationError } from 'objection';
 
 const logApp = debug('app:routes:tasks');
 
 const parseTaskData = (data) => Object.entries(data)
   .reduce((acc, [key, value]) => {
-    logApp('key & value %O', key, ' = ', value);
     if ((key.match('executorId') && !value) || key.match('labelIds')) return acc;
     if (key.match(/id/gi)) return { ...acc, ...(value && { [key]: parseInt(value, 10) }) };
     return { ...acc, [key]: value };
@@ -45,7 +43,7 @@ export default (app) => {
     })
 
     .get('/tasks/new', { name: 'newTask', preValidation: app.authenticate }, async (req, reply) => {
-      const task = new app.objection.models.task(); // eslint-disable-line
+      const task = new app.objection.models.task();
       const [users, statuses, labels] = await Promise.all([
         app.objection.models.user.query(),
         app.objection.models.taskStatus.query(),
@@ -62,7 +60,6 @@ export default (app) => {
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('POST req.body.data %O', req.body.data);
-
       const labelIds = req.body.data.labelIds || [];
       try {
         const task = await app.objection.models.task.fromJson({
@@ -85,29 +82,25 @@ export default (app) => {
 
         req.flash('info', i18next.t('flash.task.create.success'));
         reply.redirect(app.reverse('tasks'));
-        return reply;
-      } catch (err) {
-        logApp('post error %O', err);
-        if (!(err instanceof ValidationError)) throw Error(err);
-
+      } catch ({ data }) {
+        logApp('post error.data %O', data);
         req.flash('error', i18next.t('flash.task.create.error'));
-        const task = new app.objection.models.task().$set(req.body.data); // eslint-disable-line
+        const task = new app.objection.models.task().$set(req.body.data);
         const [users, statuses, labels] = await Promise.all([
           app.objection.models.user.query(),
           app.objection.models.taskStatus.query(),
           app.objection.models.label.query(),
         ]);
+        task.labelIds = labelIds;
 
         logApp('POST in  catch task %O', task);
         logApp('POST in  catch labels %O', labels);
 
         reply.render(app.reverse('newTask'), {
-          task, users, statuses, labels, errors: err.data,
+          task, users, statuses, labels, errors: data,
         });
-        return reply.code(422);
-      } finally {
-        logApp('End of handling in "createTask"');
       }
+      return reply;
     })
 
     .get('/tasks/:id', { name: 'showTask', preValidation: app.authenticate }, async (req, reply) => {
@@ -117,12 +110,12 @@ export default (app) => {
           .query().findById(id).withGraphJoined('[creator, executor, status, labels]');
         logApp('show task %O', task);
         reply.render('tasks/show', { task });
-        return reply;
-      } catch (err) {
-        logApp('showTask error %O', err);
+      } catch ({ data }) {
+        logApp('showTask error.data %O', data);
         req.flash('error', i18next.t('flash.task.showError'));
-        return reply.redirect(app.reverse('tasks'));
+        reply.redirect(app.reverse('tasks'));
       }
+      return reply;
     })
 
     .get('/tasks/:id/edit', { name: 'editTask', preValidation: app.authenticate }, async (req, reply) => {
@@ -176,10 +169,8 @@ export default (app) => {
         });
         req.flash('info', i18next.t('flash.task.update.success'));
         reply.redirect(app.reverse('tasks'));
-        return reply;
-      } catch (err) {
-        logApp('updateTask error %O', err);
-        if (!(err instanceof ValidationError)) throw err;
+      } catch ({ data }) {
+        logApp('updateTask error.data %O', data);
         req.flash('error', i18next.t('flash.task.update.error'));
         const tasksQuery = app.objection.models.task
           .query().findById(req.params.id).withGraphJoined('[creator, executor, status, labels]');
@@ -187,22 +178,22 @@ export default (app) => {
           tasksQuery,
           app.objection.models.user.query(),
           app.objection.models.taskStatus.query(),
-          app.objection.models.label.query()]);
+          app.objection.models.label.query(),
+        ]);
 
         task.name = req.body.data.name;
         task.description = req.body.data.description;
-
+        task.labelIds = labelIds;
         logApp('PATCH in  catch task %O', task);
-        logApp('PATCH in  catch labels %O', labels);
 
         reply.render('tasks/edit', {
           task,
           users,
           statuses,
           labels,
-          errors: err.data,
+          errors: data,
         });
-        return reply.code(422);
       }
+      return reply;
     });
 };

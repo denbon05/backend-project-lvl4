@@ -73,6 +73,7 @@ export default {
       },
       authError: 'Access denied! Please log in. ',
     },
+
     layouts: {
       application: {
         users: 'Users',
@@ -167,6 +168,11 @@ export default {
       name: 'Name',
       description: 'Description',
       status: 'Status',
+    },
+
+    errors: {
+      minLength: 'Should not be shorter than {{count}} characters',
+      format: 'should match format "email"',
     },
   },
 };
