@@ -14,7 +14,6 @@ describe('users CRUD', () => {
   const testData = getTestData();
 
   const exitedUser = testData.users.existing;
-  const exitedUser2 = testData.users.existing2;
 
   beforeAll(async () => {
     app = await getApp();
@@ -66,25 +65,6 @@ describe('users CRUD', () => {
     expect(user).toMatchObject(expected);
   });
 
-  it('Permision denied edit user', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('editUser', { id: exitedUser2.id }), // foreign account
-      cookies: cookie,
-    });
-
-    expect(response.statusCode).toBe(302);
-  });
-
-  it('Permision denied delete user', async () => {
-    const response = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteUser', { id: exitedUser2.id }), // foreign account
-      cookies: cookie,
-    });
-    expect(response.statusCode).toBe(302);
-  });
-
   it('GET /users/:id/edit', async () => {
     const response = await app.inject({
       method: 'GET',
@@ -95,7 +75,7 @@ describe('users CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('edit own data', async () => {
+  it('PATCH /user/:id (own account)', async () => {
     const newData = {
       firstName: 'Napoleon',
       lastName: 'Bonaparte',
@@ -121,7 +101,7 @@ describe('users CRUD', () => {
     expect(userData).toMatchObject(expected);
   });
 
-  it('delete own account', async () => {
+  it('DELETE /user/:id (own account)', async () => {
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: exitedUser.id }),

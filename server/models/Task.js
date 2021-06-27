@@ -27,7 +27,7 @@ export default class Task extends Model {
         name: { type: 'string', minLength: 1, maxLength: 30 },
         description: { type: 'string' },
         creatorId: { type: 'integer' },
-        statusId: { type: 'integer', errorMessage: 'Have to be at least 1 character' },
+        statusId: { type: 'integer' },
         executorId: { type: 'integer' },
       },
     };

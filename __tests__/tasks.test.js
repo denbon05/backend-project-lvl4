@@ -1,7 +1,6 @@
 import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
-import { omit } from 'lodash';
 import getApp from '../server/index.js';
 import { prepareData, signIn, getTestData } from './helpers/index.js';
 
@@ -11,11 +10,6 @@ describe('tasks CRUD', () => {
   let models;
   let cookie;
   const testData = getTestData();
-
-  let taskNewData;
-  let existingStatus;
-  let existingUser;
-  let existingLabel;
 
   beforeAll(async () => {
     app = await getApp();
@@ -27,24 +21,6 @@ describe('tasks CRUD', () => {
     await knex.migrate.latest();
     await prepareData(app);
     cookie = await signIn(app, testData.users.existing);
-    taskNewData = testData.tasks.new;
-    existingStatus = testData.statuses.existing;
-    existingUser = testData.users.existing;
-    existingLabel = testData.labels.existing;
-
-    await app.inject({
-      method: 'POST',
-      url: app.reverse('createTask'),
-      cookies: cookie,
-      payload: {
-        data: {
-          ...taskNewData,
-          statusId: existingStatus.id,
-          executorId: existingUser.id,
-          labelIds: existingLabel.id,
-        },
-      },
-    });
   });
 
   it('GET /tasks', async () => {
@@ -68,22 +44,29 @@ describe('tasks CRUD', () => {
   });
 
   it('POST /tasks', async () => {
-    const updatedTaskData = testData.tasks.new;
+    const {
+      labels: { existing: existingLabel },
+      tasks: { new: updatedTaskData },
+    } = testData;
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('createTask'),
       cookies: cookie,
       payload: {
-        data: updatedTaskData,
+        data: {
+          ...updatedTaskData,
+          labelIds: [existingLabel.id],
+        },
       },
     });
     expect(response.statusCode).toBe(302);
-
     const task = await models.task.query().findOne({ name: updatedTaskData.name });
+    const [relatedLabel] = await task.$relatedQuery('labels');
     expect(task).toMatchObject(updatedTaskData);
+    expect(relatedLabel).toMatchObject(existingLabel);
   });
 
-  it('GET edit tasks', async () => {
+  it('GET /tasks/:id/edit', async () => {
     const existedTask = testData.tasks.existing;
     const response = await app.inject({
       method: 'GET',
@@ -93,7 +76,7 @@ describe('tasks CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('PATCH own task', async () => {
+  it('PATCH /tasks/:id (own task)', async () => {
     const {
       tasks: { existing: existedTask },
       statuses: { existing2: anotherStatus },
@@ -101,7 +84,7 @@ describe('tasks CRUD', () => {
 
     const updatedTaskData = { name: 'Fix bug', statusId: parseInt(anotherStatus.id, 10) };
 
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'PATCH',
       url: app.reverse('updateTask', { id: existedTask.id }),
       cookies: cookie,
@@ -109,39 +92,42 @@ describe('tasks CRUD', () => {
         data: updatedTaskData,
       },
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
     const task = await models.task.query().findById(existedTask.id);
+    const relatedStatus = await task.$relatedQuery('status');
     expect(task).toMatchObject(updatedTaskData);
+    expect(relatedStatus).toMatchObject(anotherStatus);
   });
 
-  it('PATCH foreign task', async () => {
+  it('PATCH /tasks/:id (foreign task)', async () => {
     const {
       tasks: { existing2: existedTask2 },
       users: { existing: user1 },
       statuses: { existing: status },
     } = testData;
 
-    const updatedTaskData2 = { name: 'Write tests', executorId: user1.id, statusId: status.id };
+    const updatedTaskData = { name: 'Write tests', executorId: user1.id, statusId: status.id };
 
     const response3 = await app.inject({
       method: 'PATCH',
       url: app.reverse('updateTask', { id: existedTask2.id }),
       cookies: cookie,
       payload: {
-        data: updatedTaskData2,
+        data: updatedTaskData,
       },
     });
     expect(response3.statusCode).toBe(302);
 
     const task2 = await models.task.query().findById(existedTask2.id);
-    expect(task2).toMatchObject(updatedTaskData2);
+    expect(task2).toMatchObject(updatedTaskData);
   });
 
-  it('delete own task', async () => {
+  it('DELETE /tasks/:id (own task)', async () => {
     const {
-      existing: ownTask,
-    } = testData.tasks;
+      tasks: { existing: ownTask },
+      labels: { existing2: relatedLabel },
+    } = testData;
     const response = await app.inject({
       method: 'DELETE',
       cookies: cookie,
@@ -151,9 +137,12 @@ describe('tasks CRUD', () => {
 
     const task = await models.task.query().findById(ownTask.id);
     expect(task).toBeUndefined();
+
+    const label = await models.label.query().findById(relatedLabel.id);
+    expect(await label.$relatedQuery('tasks')).toHaveLength(0);
   });
 
-  it('delete foreign task', async () => {
+  it('DELETE /tasks/:id (foreign task)', async () => {
     const {
       existing2: foreignTask,
     } = testData.tasks;
@@ -169,7 +158,7 @@ describe('tasks CRUD', () => {
     expect(anotherTask).toMatchObject(foreignTask);
   });
 
-  it('filter tasks', async () => {
+  it('GET /task with searchParams (filter tasks)', async () => {
     const {
       statuses: { existing2: existingStatus2 },
       users: { existing2: existingUser2 },
@@ -191,59 +180,17 @@ describe('tasks CRUD', () => {
     const tasksQuery = models.task.query()
       .withGraphJoined('[creator, executor, status, labels]');
 
-    tasksQuery.modify('filterStatus', existingStatus2.id);
-    tasksQuery.modify('filterExecutor', existingUser2.id);
-    tasksQuery.modify('filterLabel', existingLabel2.id);
+    tasksQuery
+      .modify('filterStatus', existingStatus2.id)
+      .modify('filterExecutor', existingUser2.id)
+      .modify('filterLabel', existingLabel2.id);
+
     const tasks = await tasksQuery;
     expect(tasks).toHaveLength(1);
 
     tasksQuery.modify('filterCreator', existingUser2.id);
     const tasks2 = await tasksQuery;
     expect(tasks2).toHaveLength(0);
-  });
-
-  it('Tasks relations with labels, statuses, executor', async () => {
-    const task = await models.task
-      .query()
-      .findOne({ 'tasks.name': taskNewData.name })
-      .withGraphJoined('labels');
-
-    expect(task.labels[0].id).toEqual(existingLabel.id);
-    expect(task.statusId).toEqual(existingStatus.id);
-    expect(task.executorId).toEqual(existingUser.id);
-  });
-
-  it("Can't delete statuse dependent on task", async () => {
-    await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteStatus', { id: existingStatus.id }),
-      cookies: cookie,
-    });
-
-    const status = await models.taskStatus.query().findById(existingStatus.id);
-    expect(status).toMatchObject(existingStatus);
-  });
-
-  it("Can't delete user dependent on task", async () => {
-    await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteUser', { id: existingUser.id }), // own account
-      cookies: cookie,
-    });
-
-    const user = await models.user.query().findById(existingUser.id);
-    expect(user).toMatchObject(omit(existingUser, 'password'));
-  });
-
-  it("Can't delete label dependent on task", async () => {
-    await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteLabel', { id: existingLabel.id }),
-      cookies: cookie,
-    });
-
-    const label = await models.label.query().findById(existingLabel.id);
-    expect(label).toMatchObject(existingLabel);
   });
 
   afterEach(async () => {

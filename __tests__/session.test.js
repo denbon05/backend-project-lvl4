@@ -31,7 +31,7 @@ describe('test session', () => {
       method: 'POST',
       url: app.reverse('session'),
       payload: {
-        data: getTestData().users.existing,
+        data: testData.users.existing,
       },
     });
     expect(responseSignIn.statusCode).toBe(302);

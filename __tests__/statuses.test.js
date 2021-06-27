@@ -57,16 +57,6 @@ describe('statuses CRUD', () => {
 
     const status = await models.taskStatus.query().findOne({ name: updatedData.name });
     expect(status).toMatchObject(updatedData);
-
-    const response2 = await app.inject({
-      method: 'POST',
-      url: app.reverse('statuses'),
-      cookies: cookie,
-      payload: {
-        data: { name: testData.statuses.existing.name },
-      },
-    });
-    expect(response2.statusCode).toBe(422);
   });
 
   it('GET edit status', async () => {
@@ -82,7 +72,7 @@ describe('statuses CRUD', () => {
   it('PATCH status', async () => {
     const { id } = testData.statuses.existing;
     const updatedData = { name: 'new status' };
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'PATCH',
       url: app.reverse('updateStatus', { id }),
       cookies: cookie,
@@ -90,7 +80,7 @@ describe('statuses CRUD', () => {
         data: updatedData,
       },
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
     const status = await models.taskStatus.query().findById(id);
     expect(status).toMatchObject(updatedData);
@@ -99,12 +89,12 @@ describe('statuses CRUD', () => {
   it('delete status', async () => {
     const { existing } = testData.statuses;
 
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteStatus', { id: existing.id }),
       cookies: cookie,
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
     const status2 = await models.taskStatus.query().findById(existing.id);
     expect(status2).toBeUndefined();
