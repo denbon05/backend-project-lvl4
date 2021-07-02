@@ -26,7 +26,7 @@ export default class TaskStatus extends unique(Model) {
 
       properties: {
         id: { type: 'integer' },
-        name: { type: 'string', minLength: 1, errorMessage: 'Have to be at least 1 character' },
+        name: { type: 'string', minLength: 1 },
       },
     };
   }

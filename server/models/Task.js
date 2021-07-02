@@ -2,15 +2,27 @@
 
 import path from 'path';
 import { Model } from 'objection';
+import debug from 'debug';
+
+const logApp = debug('app:models:Task');
 
 export default class Task extends Model {
   $parseJson(json, options) {
-    const parsed = super.$parseJson(json, options);
-    return {
-      ...parsed,
+    logApp('json %O', json);
+    logApp('options %O', options);
+    const parsed = super.$parseJson(json);
+    logApp('parsed %O', parsed);
+    const obj = {
+      ...(parsed.id && { id: Number(parsed.id) }),
       ...(parsed.name && { name: parsed.name.trim() }),
       ...(parsed.description && { description: parsed.description.trim() }),
+      ...(parsed.statusId && { statusId: Number(parsed.statusId) }),
+      ...(parsed.executorId && { executorId: Number(parsed.executorId) }),
+      ...(parsed.creatorId && { creatorId: Number(parsed.creatorId) }),
+      ...(parsed.labels && { labels: parsed.labels }),
     };
+    logApp('obj %O', obj);
+    return obj;
   }
 
   static get tableName() {

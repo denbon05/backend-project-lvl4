@@ -14,7 +14,7 @@
 
 #### Limitations
 <ul>
-<li><b>Users:</b> You can manage only own profile</li>
+<li><b>Users:</b> You can manage only own profile, but you can't delete account if the task depend on it</li>
 <li><b>Statuses:</b> Total access, but if status belong to task, you can't delete it</li>
 <li><b>Labels:</b> Total access, but if label belong to task, you can't delete it</li>
 <li><b>Tasks:</b> Only author can delete it</li>

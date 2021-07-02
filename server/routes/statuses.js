@@ -8,7 +8,6 @@ export default (app) => {
     .get('/statuses', { name: 'statuses', preValidation: app.authenticate }, async (req, reply) => {
       const statuses = await app.objection.models.taskStatus.query();
       logApp('list statuses %O', statuses);
-      logApp('req.cookies %O', req.cookies);
       reply.render('statuses/index', { statuses });
       return reply;
     })
@@ -47,13 +46,14 @@ export default (app) => {
 
     .delete('/statuses/:id', { name: 'deleteStatus', preValidation: app.authenticate }, async (req, reply) => {
       const status = await app.objection.models.taskStatus.query().findById(req.params.id);
-      const tasksWithStatus = await app.objection.models.task.query()
-        .where('statusId', status.id);
-      logApp('tasksWithStatus %O', tasksWithStatus);
-      if (tasksWithStatus.length === 0) {
+      const tasks = await status.$relatedQuery('tasks');
+      logApp('DELETE statuses - number of tasks dependents %O', tasks.length);
+      if (tasks.length === 0) {
         await app.objection.models.taskStatus.query().deleteById(req.params.id);
         req.flash('info', i18next.t('flash.status.delete.success'));
-      } else req.flash('error', i18next.t('flash.status.delete.error'));
+      } else {
+        req.flash('error', i18next.t('flash.status.delete.error'));
+      }
       reply.redirect(app.reverse('statuses'));
       return reply;
     })

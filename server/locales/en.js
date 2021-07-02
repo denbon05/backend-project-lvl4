@@ -132,7 +132,7 @@ export default {
         statusId: 'Status',
         author: 'Author',
         executorId: 'Executor',
-        labelIds: 'Labels',
+        labels: 'Labels',
         createdAt: 'Creation date',
         filter: 'Show',
       },

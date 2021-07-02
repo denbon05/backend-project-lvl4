@@ -24,6 +24,7 @@ import getHelpers from './helpers/index.js';
 import knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
+import AuthorizeStrategy from './lib/passportStrategies/AuthorizeStrategy.js';
 
 const logApp = debug('app');
 
@@ -108,6 +109,7 @@ const registerPlugins = (app) => {
   );
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
   fastifyPassport.use(new FormStrategy('form', app));
+  fastifyPassport.use(new AuthorizeStrategy('permissions'));
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.decorate('fp', fastifyPassport);
@@ -119,18 +121,19 @@ const registerPlugins = (app) => {
     },
   // @ts-ignore
   )(...args));
+  app.decorate('authorize', (...args) => fastifyPassport.authenticate(
+    'permissions',
+    {
+      failureRedirect: app.reverse('users'),
+      failureFlash: i18next.t('flash.users.authError'),
+    },
+  // @ts-ignore
+  )(...args));
 
   app.register(fastifyMethodOverride);
   app.register(fastifyObjectionjs, {
     knexConfig: knexConfig[mode],
     models,
-  });
-
-  app.decorate('checkIfUserCanEditProfile', async (req, reply) => {
-    if (req.user?.id !== parseInt(req.params.id, 10)) {
-      req.flash('error', i18next.t('flash.users.authError'));
-      reply.redirect('/users');
-    }
   });
 };
 

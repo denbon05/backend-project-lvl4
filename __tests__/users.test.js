@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { omit } from 'lodash';
 import {
   describe, beforeAll, it, expect, afterAll, beforeEach, afterEach,
 } from '@jest/globals';
@@ -58,7 +58,7 @@ describe('users CRUD', () => {
     expect(response.statusCode).toBe(302);
 
     const expected = {
-      ..._.omit(newUserData, 'password'),
+      ...omit(newUserData, 'password'),
       passwordDigest: encrypt(newUserData.password),
     };
     const user = await models.user.query().findOne({ email: newUserData.email });
@@ -95,7 +95,7 @@ describe('users CRUD', () => {
 
     const userData = await models.user.query().findById(exitedUser.id);
     const expected = {
-      ..._.omit(newData, 'password'),
+      ...omit(newData, 'password'),
       passwordDigest: encrypt(newData.password),
     };
     expect(userData).toMatchObject(expected);
@@ -110,7 +110,8 @@ describe('users CRUD', () => {
     expect(response.statusCode).toBe(302);
 
     const user = await models.user.query().findById(exitedUser.id);
-    expect(user).toBeUndefined();
+    expect(omit(user, ['passwordDigest'])) // user has created task
+      .toMatchObject(omit(testData.users.existing, 'password'));
   });
 
   afterEach(async () => {

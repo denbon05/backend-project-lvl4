@@ -30,13 +30,12 @@ export default (app) => {
         logApp('POST users req.body.data %O', req.body.data);
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user: req.body.data, errors: data });
-        reply.code(403);
       }
       return reply;
     })
 
     .get('/users/:id/edit', {
-      name: 'editUser', preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
+      name: 'editUser', preValidation: app.authorize,
     }, async (req, reply) => {
       const { id } = req.params;
       const user = await app.objection.models.user.query().findById(id);
@@ -46,7 +45,7 @@ export default (app) => {
 
     .patch('/users/:id', {
       name: 'updateUserData',
-      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
+      preValidation: app.authorize,
     }, async (req, reply) => {
       const { id } = req.params;
       logApp('patch req.body.data-> %O', req.body.data);
@@ -59,9 +58,10 @@ export default (app) => {
       } catch ({ data }) {
         logApp('patch error.data %O', data);
         req.flash('error', i18next.t('flash.users.update.error'));
-        logApp('patch error omited user %O', omit(user, ['passwordDigest', 'email']));
+        const userWithoutPassword = omit(user, ['passwordDigest']);
+        logApp('patch error omited user %O', userWithoutPassword);
         reply.render('users/edit', {
-          user: { ...omit(user, ['passwordDigest', 'email']), ...req.body.data },
+          user: { ...userWithoutPassword, ...req.body.data },
           errors: data,
         });
         reply.code(422);
@@ -71,19 +71,23 @@ export default (app) => {
 
     .delete('/users/:id', {
       name: 'deleteUser',
-      preValidation: app.auth([app.checkIfUserCanEditProfile, app.authenticate]),
+      preValidation: app.authorize,
     }, async (req, reply) => {
-      const tasks = await app.objection.models.task.query().where('executorId', req.params.id);
-      if (tasks.length > 0) {
+      logApp('req.user %O', req.user);
+      const user = await app.objection.models.user.query().findById(req.user.id);
+      const notExecutedTasks = await user.$relatedQuery('executorTasks');
+      const createdByUserTasks = await user.$relatedQuery('creatorTasks');
+      logApp('user %O', user);
+      logApp('user notExecutedTasks %O', notExecutedTasks);
+      logApp('user createdByUserTasks %O', createdByUserTasks);
+      if (notExecutedTasks.length > 0 || createdByUserTasks.length > 0) {
         req.flash('error', i18next.t('flash.users.delete.error'));
-        reply.redirect('/users');
       } else {
         req.logOut();
         await app.objection.models.user.query().deleteById(req.params.id);
         req.flash('info', i18next.t('flash.users.delete.success'));
-        reply.redirect(app.reverse('users'));
       }
-
+      reply.redirect(app.reverse('users'));
       return reply;
     });
 };
