@@ -71,7 +71,7 @@ describe('labels CRUD', () => {
 
   it('PATCH label', async () => {
     const updatedData = { name: 'wontfix' };
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'PATCH',
       url: app.reverse('updateLabel', { id: testData.labels.existing.id }),
       cookies: cookie,
@@ -79,7 +79,7 @@ describe('labels CRUD', () => {
         data: updatedData,
       },
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
     const label = await models.label.query().findById(testData.labels.existing.id);
     expect(label).toMatchObject({ ...testData.labels.existing, ...updatedData });

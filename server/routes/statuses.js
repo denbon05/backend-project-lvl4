@@ -7,14 +7,12 @@ export default (app) => {
   app
     .get('/statuses', { name: 'statuses', preValidation: app.authenticate }, async (req, reply) => {
       const statuses = await app.objection.models.taskStatus.query();
-      logApp('list statuses %O', statuses);
       reply.render('statuses/index', { statuses });
       return reply;
     })
 
     .get('/statuses/new', { name: 'newStatus', preValidation: app.authenticate }, async (req, reply) => {
       const status = await new app.objection.models.taskStatus();
-      logApp('status %O', status);
       reply.render('statuses/new', { status });
       return reply;
     })
@@ -22,15 +20,15 @@ export default (app) => {
     .post('/statuses', { name: 'statusCreate', preValidation: app.authenticate }, async (req, reply) => {
       logApp('post data %O', req.body.data);
       try {
-        const status = await app.objection.models.taskStatus.fromJson(req.body.data);
-        logApp('status is %O', status);
-        await app.objection.models.taskStatus.query().insert(status);
+        const statusData = await app.objection.models.taskStatus.fromJson(req.body.data);
+        await app.objection.models.taskStatus.query().insert(statusData);
         req.flash('info', i18next.t('flash.status.create.success'));
         reply.redirect(app.reverse('statuses'));
-      } catch ({ data }) {
-        logApp('post error.data %O', data);
+      } catch (err) {
+        logApp('post error %O', err);
         req.flash('error', i18next.t('flash.status.create.error'));
-        reply.render(app.reverse('newStatus'), { status: req.body.data, errors: data });
+        const status = new app.objection.models.taskStatus().$set(req.body.data);
+        reply.render(app.reverse('newStatus'), { status, errors: err.data });
         reply.code(422);
       }
       return reply;
@@ -58,19 +56,21 @@ export default (app) => {
       return reply;
     })
 
-    .patch('/statuses/:id', { name: 'updateStatus', preValidation: app.authenticate }, async (req, reply) => {
+    .patch('/statuses/:id', {
+      name: 'updateStatus', preValidation: app.authenticate,
+    }, async (req, reply) => {
       const { id } = req.params;
-      const status = await app.objection.models.taskStatus.query().findById(id);
-      logApp('in PATCH status %O', status);
+      const oldStatus = await app.objection.models.taskStatus.query().findById(id);
       try {
-        logApp('patch finded by id status-> %O', status);
-        await status.$query().update(req.body.data);
+        await oldStatus.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.status.update.success'));
         reply.redirect(app.reverse('statuses'));
-      } catch ({ data }) {
-        logApp('PATCH error.data %O', data);
+      } catch (err) {
+        logApp('PATCH error %O', err);
         req.flash('error', i18next.t('flash.status.update.error'));
-        reply.render('statuses/edit', { status: { ...status, ...req.body.data }, errors: data });
+        const status = new app.objection.models.taskStatus()
+          .$set({ ...oldStatus, ...req.body.data });
+        reply.render('statuses/edit', { status, errors: err.data });
         reply.code(422);
       }
       return reply;

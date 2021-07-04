@@ -4,19 +4,19 @@ block content
   a.nav-link(href=route('newTask'))= t('views.tasks.create')
   .jumbotron.p-2
     +formFor()(action=route('tasks') method='get' class="form-inline")
-      +filterSelect('task', 'status', statuses, query)
-      +filterSelect('task', 'executor', users, query)
-      +filterSelect('task', 'label', labels, query)
-      +checkbox('task','isCreatorUser')
+      +filterSelect('task', 'status', statuses, filterOptions)
+      +filterSelect('task', 'executor', users, filterOptions)
+      +filterSelect('task', 'label', labels, filterOptions)
+      +checkbox('isCreatorUser', filterOptions)
       +submit()(value=t('views.tasks.filter'))
   table.table.table-striped
     thead
       tr
         th= t('views.tasks.id')
         th= t('views.tasks.name')
-        th= t('views.tasks.statusId')
+        th= t('views.tasks.status')
         th= t('views.tasks.author')
-        th= t('views.tasks.executorId')
+        th= t('views.tasks.executor')
         th= t('views.tasks.createdAt')
         th
     tbody
@@ -28,7 +28,7 @@ block content
           td= task.status.name
           td= task.creator.name
           if task.executor
-            td= task.executor.name
+            td= _.get(task.executor, 'name')
           else
             td
           td= formatDate(task.createdAt)

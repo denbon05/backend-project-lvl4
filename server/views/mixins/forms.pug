@@ -29,7 +29,6 @@ mixin textarea(entity, propertyName, errors = {})
   - classLine = 'form-control' + (!propertyErrors ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
-  - value=_.get(entity, propertyName, '')
   .form-group(class=(errors[propertyName] && 'has-danger'))
     label(
       for= inputId
@@ -38,7 +37,7 @@ mixin textarea(entity, propertyName, errors = {})
       id= inputId
       name= name
       class=classLine
-    )&attributes(attributes) #{value}
+    )&attributes(attributes)= _.get(entity, propertyName, '')
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
@@ -49,19 +48,14 @@ mixin submit(form = null)
 mixin buttonTo(action, method)
   form(action=action, method="post")
     input(name="_method" type="hidden" value=method)
-    input(type='submit')&attributes(attributes)
 
 mixin select(entity, propertyName, errors = {}, items, multiple = false)
-  - log('propertyName %O', propertyName)
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (!propertyErrors ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
-  //- - log('items %O', items)
-  - log('entityName %O', entityName)
   - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
-  - log('selectedOptions %O', selectedOptions)
   .form-group
     label(for=inputId)= t(`views.${entityName}s.${propertyName}`)
     select.form-control(
@@ -78,11 +72,9 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
     if !_.isEmpty(propertyErrors)
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
-mixin filterSelect(entity, propertyName, items, query)
+mixin filterSelect(entity, propertyName, items, filterOptions)
   - classLine = 'form-control ml-2 mr-3'
   - inputId = getInputId(propertyName)
-  - log('query & propertyName %O', query, propertyName)
-  - log('isSelect %O', Boolean(query[propertyName]))
   .form-group 
     label(for=inputId)= t(`views.filters.${propertyName}`)
     select.form-control(
@@ -93,14 +85,14 @@ mixin filterSelect(entity, propertyName, items, query)
       )
       option(selected= true)
       each item in items 
-        - isSelect = Boolean(query[propertyName])
+        - isSelect = Boolean(filterOptions[propertyName])
         option(value=item.id, selected= isSelect)= item.name
 
-mixin checkbox(entity, propertyName)
+mixin checkbox(propertyName, filterOptions)
   - classLine = 'form-control form-check-input ml-2 mr-3'
   - inputId = getInputId(propertyName)
   .form-group.form-check
     label.form-check-label(for=inputId)= t(`views.filters.${propertyName}`)
-    input.form-check-input(class=classLine id=inputId type='checkbox' name=propertyName)
+    input.form-check-input(class=classLine id=inputId type='checkbox' name=propertyName checked=filterOptions[propertyName])
 
 

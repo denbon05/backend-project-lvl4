@@ -32,7 +32,7 @@ export default (app) => {
         users,
         statuses,
         labels,
-        query: req.query,
+        filterOptions,
       });
       return reply;
     })
@@ -63,13 +63,11 @@ export default (app) => {
         });
         logApp('POST createTask taskData %O', taskData);
         const labels = [labelIds].flat().map((id) => ({ id: Number(id) }));
-        logApp('POST createTask labels %O', labels);
         logApp('POST GRAPH %O', taskData);
         await app.objection.models.task.transaction(async (trx) => {
           await app.objection.models.task.query(trx).allowGraph('labels').insertGraph([{
             ...taskData, labels,
           }], { relate: true });
-          logApp('IN transaction');
         });
         req.flash('info', i18next.t('flash.task.create.success'));
         reply.redirect(app.reverse('tasks'));
@@ -84,9 +82,6 @@ export default (app) => {
         ]);
         task.labelIds = labelIds;
 
-        logApp('POST in  catch task %O', task);
-        logApp('POST in  catch labels %O', labels);
-
         reply.render(app.reverse('newTask'), {
           task, users, statuses, labels, errors: err.data,
         });
@@ -99,7 +94,6 @@ export default (app) => {
       try {
         const task = await app.objection.models.task
           .query().findById(id).withGraphJoined('[creator, executor, status, labels]');
-        logApp('show task %O', task);
         reply.render('tasks/show', { task });
       } catch (err) {
         logApp('showTask error.data %O', err);
@@ -116,8 +110,6 @@ export default (app) => {
         app.objection.models.taskStatus.query(),
         app.objection.models.label.query(),
       ]);
-      logApp('edit task %O', task);
-      logApp('edit labels %O', labels);
       reply.render('tasks/edit', {
         task,
         users,
@@ -132,10 +124,7 @@ export default (app) => {
       preValidation: app.authenticate,
     }, async (req, reply) => {
       const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
-      logApp('creatorId %O', creatorId);
-      logApp('req.user.id %O', req.user.id);
       if (req.user.id !== creatorId) {
-        logApp('User is not creator of task');
         req.flash('error', i18next.t('flash.task.authError'));
       } else {
         await app.objection.models.task.query().deleteById(req.params.id);
@@ -148,16 +137,11 @@ export default (app) => {
     .patch('/tasks/:id', { name: 'updateTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('updateTask req.params %O', req.params);
       const labelIds = req.body.data.labels ?? [];
-      logApp('updateTask labelIds %O', labelIds);
       logApp('updateTask req.body.data %O', req.body.data);
       const oldTask = await app.objection.models.task.query()
         .findById(req.params.id);
-      logApp('in PATCH oldTask %O', oldTask);
       try {
-        const labels = await Promise.all([labelIds].flat().map(async (id) => (
-          await app.objection.models.label.query().findById(id) // eslint-disable-line
-        )));
-        logApp('in PATCH labels %O', labels);
+        const labels = await app.objection.models.label.query().findByIds(labelIds);
         const taskData = await app.objection.models.task.fromJson({
           ...oldTask,
           ...req.body.data,
@@ -175,7 +159,6 @@ export default (app) => {
         logApp('updateTask error %O', err);
         req.flash('error', i18next.t('flash.task.update.error'));
         const task = new app.objection.models.task().$set({ ...oldTask, ...req.body.data });
-        logApp('in PATCH catch task %O', task);
         const [users, statuses, labels] = await Promise.all([ // eslint-disable-line
           app.objection.models.user.query(),
           app.objection.models.taskStatus.query(),

@@ -20,16 +20,17 @@ export default (app) => {
     })
 
     .post('/users', async (req, reply) => {
+      logApp('POST users req.body.data %O', req.body.data);
       try {
         const user = await app.objection.models.user.fromJson(req.body.data);
         await app.objection.models.user.query().insert(user);
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
-      } catch ({ data }) {
-        logApp('post error.data %O', data);
-        logApp('POST users req.body.data %O', req.body.data);
+      } catch (err) {
+        logApp('post error.data %O', err);
+        const user = new app.objection.models.user().$set(req.body.data);
         req.flash('error', i18next.t('flash.users.create.error'));
-        reply.render('users/new', { user: req.body.data, errors: data });
+        reply.render('users/new', { user, errors: err.data });
       }
       return reply;
     })
@@ -49,20 +50,20 @@ export default (app) => {
     }, async (req, reply) => {
       const { id } = req.params;
       logApp('patch req.body.data-> %O', req.body.data);
-      const user = await app.objection.models.user.query().findById(id);
-      logApp('patch user from db %O', user);
+      const oldUser = await app.objection.models.user.query().findById(id);
       try {
-        await user.$query().update(req.body.data);
+        await oldUser.$query().update(req.body.data);
         req.flash('info', i18next.t('flash.users.update.success'));
         reply.redirect(app.reverse('users'));
-      } catch ({ data }) {
-        logApp('patch error.data %O', data);
+      } catch (err) {
+        logApp('patch error %O', err);
         req.flash('error', i18next.t('flash.users.update.error'));
-        const userWithoutPassword = omit(user, ['passwordDigest']);
-        logApp('patch error omited user %O', userWithoutPassword);
+        const userWithoutPassword = omit(oldUser, ['passwordDigest']);
+        const user = new app.objection.models.user()
+          .$set({ ...userWithoutPassword, ...req.body.data });
         reply.render('users/edit', {
-          user: { ...userWithoutPassword, ...req.body.data },
-          errors: data,
+          user,
+          errors: err.data,
         });
         reply.code(422);
       }
@@ -73,19 +74,16 @@ export default (app) => {
       name: 'deleteUser',
       preValidation: app.authorize,
     }, async (req, reply) => {
-      logApp('req.user %O', req.user);
+      logApp('DELETE req.user %O', req.user);
       const user = await app.objection.models.user.query().findById(req.user.id);
       const notExecutedTasks = await user.$relatedQuery('executorTasks');
       const createdByUserTasks = await user.$relatedQuery('creatorTasks');
-      logApp('user %O', user);
-      logApp('user notExecutedTasks %O', notExecutedTasks);
-      logApp('user createdByUserTasks %O', createdByUserTasks);
-      if (notExecutedTasks.length > 0 || createdByUserTasks.length > 0) {
-        req.flash('error', i18next.t('flash.users.delete.error'));
-      } else {
+      if (notExecutedTasks.length === 0 || createdByUserTasks.length === 0) {
         req.logOut();
         await app.objection.models.user.query().deleteById(req.params.id);
         req.flash('info', i18next.t('flash.users.delete.success'));
+      } else {
+        req.flash('error', i18next.t('flash.users.delete.error'));
       }
       reply.redirect(app.reverse('users'));
       return reply;

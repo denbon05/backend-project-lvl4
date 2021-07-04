@@ -1,12 +1,9 @@
 // @ts-check
 
 import { Model } from 'objection';
-import objectionUnique from 'objection-unique';
 import path from 'path';
 
-const unique = objectionUnique({ fields: ['name'] });
-
-export default class Label extends unique(Model) {
+export default class Label extends Model {
   $parseJson(json, options) {
     const parsed = super.$parseJson(json, options);
     return {
