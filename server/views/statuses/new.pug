@@ -6,4 +6,4 @@ block header
 block content
   +formFor()(action=route('statusCreate') method='post')
     +input(status, 'name', errors, false)(type="text")
-    +submit(status)(value=t('views.manage.submit'))
+    +submit(t('views.manage.submit'), false)

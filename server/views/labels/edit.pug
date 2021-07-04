@@ -6,6 +6,6 @@ block header
 block content
   +formFor()(action=route('updateLabel', { id: label.id }) method='post')
     +input(label, 'name', errors)(type="text")
-    +submit()(value=t('views.manage.edit'))
     +buttonTo(route('updateLabel', { id: label.id }), 'patch')
+      +submit(t('views.manage.edit'))
     

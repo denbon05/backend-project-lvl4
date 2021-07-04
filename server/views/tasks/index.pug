@@ -8,7 +8,7 @@ block content
       +filterSelect('task', 'executor', users, filterOptions)
       +filterSelect('task', 'label', labels, filterOptions)
       +checkbox('isCreatorUser', filterOptions)
-      +submit()(value=t('views.tasks.filter'))
+      +submit(t('views.tasks.filter'),false)
   table.table.table-striped
     thead
       tr
@@ -34,5 +34,6 @@ block content
           td= formatDate(task.createdAt)
           td.d-md-flex
             a(class='btn-link btn' href=route('editTask', { id: task.id }))= t('views.manage.edit')
-            +buttonTo(route('deleteTask', { id: task.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')
+            +buttonTo(route('deleteTask', { id: task.id }), 'delete')
+              +submit(t('views.manage.delete'))
     

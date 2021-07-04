@@ -17,4 +17,5 @@ block content
           td= formatDate(label.createdAt)
           td.d-md-flex
             a(class='btn-link btn' href=route('editLabel', { id: label.id }))= t('views.manage.edit')
-            +buttonTo(route('deleteLabel', { id: label.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')
+            +buttonTo(route('deleteLabel', { id: label.id }), 'delete')
+              +submit(t('views.manage.delete'), link=true)(class='btn-link btn')

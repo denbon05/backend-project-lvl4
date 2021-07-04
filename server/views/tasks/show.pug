@@ -30,4 +30,5 @@ block content
         .row.p-1
           .col.d-flex
             a(class='btn-link btn' href=route('editTask', { id: task.id }))= t('views.manage.edit')
-            +buttonTo(route('deleteTask', { id: task.id }), 'delete')(value=t('views.manage.delete') class='btn-link btn')
+            +buttonTo(route('deleteTask', { id: task.id }), 'delete')
+              +submit(t('views.manage.delete'))
