@@ -42,9 +42,7 @@ mixin textarea(entity, propertyName, errors = {})
       .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
 
 mixin submit(value, link = true)
-  - log('link %O', link)
   - classLine = link ? 'btn btn-link' : 'btn btn-primary'
-  - log('classLIne %O', classLine)
   .form-group
     input(class=classLine type='submit' value=value)&attributes(attributes)
 
