@@ -102,7 +102,7 @@ describe('users CRUD', () => {
   });
 
   it('DELETE /user/:id (own account)', async () => {
-    const existingUserBob =testData.users.existing3;
+    const existingUserBob = testData.users.existing3;
     const response = await app.inject({
       method: 'DELETE',
       url: app.reverse('deleteUser', { id: existingUserBob.id }),
