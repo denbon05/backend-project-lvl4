@@ -27,8 +27,7 @@ html(lang="en")
         ul.navbar-nav
           if isAuthenticated()
             li.nav-item
-              +buttonTo(route('session'), 'delete')
-                +submit(t('layouts.application.signOut'))(class="btn nav-link")
+              +buttonTo(route('session'), 'delete')(value=t('layouts.application.signOut') class='nav-link btn')
           else
             li.nav-item
               a.nav-link(href=route('newSession'))= t('layouts.application.signIn')

@@ -34,13 +34,13 @@ describe('tasks CRUD', () => {
   });
 
   it('GET /tasks/new', async () => {
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'GET',
       url: app.reverse('newTask'),
       cookies: cookie,
     });
 
-    expect(response2.statusCode).toBe(200);
+    expect(response.statusCode).toBe(200);
   });
 
   it('POST /tasks', async () => {
@@ -82,7 +82,7 @@ describe('tasks CRUD', () => {
       statuses: { existing2: anotherStatus },
     } = testData;
 
-    const updatedTaskData = { name: 'Fix bug', statusId: parseInt(anotherStatus.id, 10) };
+    const updatedTaskData = { name: 'Fix bug', statusId: Number(anotherStatus.id) };
 
     const response = await app.inject({
       method: 'PATCH',
@@ -147,12 +147,12 @@ describe('tasks CRUD', () => {
       existing2: foreignTask,
     } = testData.tasks;
 
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'DELETE',
       cookies: cookie,
       url: app.reverse('deleteTask', { id: foreignTask.id }),
     });
-    expect(response2.statusCode).toBe(302);
+    expect(response.statusCode).toBe(302);
 
     const anotherTask = await models.task.query().findById(foreignTask.id);
     expect(anotherTask).toMatchObject(foreignTask);
@@ -165,7 +165,7 @@ describe('tasks CRUD', () => {
       labels: { existing2: existingLabel2 },
     } = testData;
 
-    const response2 = await app.inject({
+    const response = await app.inject({
       method: 'GET',
       cookies: cookie,
       url: app.reverse('tasks'),
@@ -175,7 +175,7 @@ describe('tasks CRUD', () => {
         label: existingLabel2.id, // should stay one item
       },
     });
-    expect(response2.statusCode).toBe(200);
+    expect(response.statusCode).toBe(200);
 
     const tasksQuery = models.task.query()
       .withGraphJoined('[creator, executor, status, labels]');

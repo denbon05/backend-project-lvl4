@@ -12,5 +12,12 @@
     "email": "nona_murray@yahoo.com",
     "passwordDigest": "760391e7dceb3cf65ee23e97ca3db8c1515d18c3434b003c1fd781053afcf86f",
     "id": 9
+  },
+  {
+    "firstName": "bob",
+    "lastName": "marley",
+    "email": "bob@marley.com",
+    "passwordDigest": "4dcf32b249f87b8926f0e2798149b2797208ae69f482e6bf5f7a3aca7ed8f205",
+    "id": 1
   }
 ]

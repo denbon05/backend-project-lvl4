@@ -49,7 +49,7 @@ mixin submit(value, link = true)
 mixin buttonTo(action, method)
   form(action=action, method="post")
     input(name="_method" type="hidden" value=method)
-    block
+    input(type='submit')&attributes(attributes)
 
 mixin select(entity, propertyName, errors = {}, items, multiple = false)
   - propertyErrors = _.get(errors, propertyName)
@@ -87,7 +87,7 @@ mixin filterSelect(entity, propertyName, items, filterOptions)
       )
       option(selected= true)
       each item in items 
-        - isSelect = Boolean(filterOptions[propertyName])
+        - isSelect = filterOptions[propertyName] == item.id
         option(value=item.id, selected= isSelect)= item.name
 
 mixin checkbox(propertyName, filterOptions)

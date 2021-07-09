@@ -27,6 +27,9 @@ export default (app) => {
         app.objection.models.label.query(),
       ]);
 
+      logApp('GET tasks %O', tasks);
+      logApp('GET labels %O', labels);
+
       reply.render('tasks/index', {
         tasks,
         users,

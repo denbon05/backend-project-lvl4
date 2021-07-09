@@ -17,8 +17,15 @@
       "firstName": "Nona",
       "lastName": "Murray",
       "email": "nona_murray@yahoo.com",
-      "passwordDigest": "3c1fd781053afcf86f",
+      "password": "3c1fd781053afcf86f",
       "id": 9
+    },
+    "existing3": {
+      "firstName": "bob",
+      "lastName": "marley",
+      "email": "bob@marley.com",
+      "password": "bobmarley",
+      "id": 1
     }
   },
 

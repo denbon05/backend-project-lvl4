@@ -13,7 +13,7 @@ describe('users CRUD', () => {
   let cookie;
   const testData = getTestData();
 
-  const exitedUser = testData.users.existing;
+  const existedUser = testData.users.existing;
 
   beforeAll(async () => {
     app = await getApp();
@@ -68,7 +68,7 @@ describe('users CRUD', () => {
   it('GET /users/:id/edit', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: app.reverse('editUser', { id: exitedUser.id }),
+      url: app.reverse('editUser', { id: existedUser.id }),
       cookies: cookie,
     });
 
@@ -85,7 +85,7 @@ describe('users CRUD', () => {
 
     const response = await app.inject({
       method: 'PATCH',
-      url: app.reverse('updateUserData', { id: exitedUser.id }),
+      url: app.reverse('updateUserData', { id: existedUser.id }),
       cookies: cookie,
       payload: {
         data: newData,
@@ -93,7 +93,7 @@ describe('users CRUD', () => {
     });
     expect(response.statusCode).toBe(302);
 
-    const userData = await models.user.query().findById(exitedUser.id);
+    const userData = await models.user.query().findById(existedUser.id);
     const expected = {
       ...omit(newData, 'password'),
       passwordDigest: encrypt(newData.password),
@@ -102,16 +102,16 @@ describe('users CRUD', () => {
   });
 
   it('DELETE /user/:id (own account)', async () => {
+    const existingUserBob =testData.users.existing3;
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('deleteUser', { id: exitedUser.id }),
-      cookies: cookie,
+      url: app.reverse('deleteUser', { id: existingUserBob.id }),
+      cookies: await signIn(app, testData.users.existing3), // bob marley user
     });
     expect(response.statusCode).toBe(302);
 
-    const user = await models.user.query().findById(exitedUser.id);
-    expect(omit(user, ['passwordDigest'])) // user has created task
-      .toMatchObject(omit(testData.users.existing, 'password'));
+    const user = await models.user.query().findById(existingUserBob.id);
+    expect(user).toBeUndefined();
   });
 
   afterEach(async () => {
