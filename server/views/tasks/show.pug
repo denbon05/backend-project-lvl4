@@ -10,13 +10,13 @@ block content
       .container
         .row.p-1
           .col= t('views.tasks.author')
-          .col= task.creator.name
+          .col= _.get(task.creator, 'name')
         .row.p-1
           .col= t('views.tasks.executor')
           .col= _.get(task.executor, 'name')
         .row.p-1
           .col= t('views.tasks.status')
-          .col= task.status.name
+          .col= _.get(task.status, 'name')
         .row.p-1
           .col= t('views.tasks.createdAt')
           .col= formatDate(task.createdAt)

@@ -1,6 +1,7 @@
 - const getInputName = (property) => `data[${property}]`
 - const getInputId = (property) => `data_${property}`
 - const getLengthCount = (err) => (err.message.match(/\d+/) && err.message.match(/\d+/)[0]) || ''
+- const names = { statusId: 'status', executorId: 'executor', labelIds: 'labels' }
 
 mixin formFor(entity = null)
   form&attributes(attributes)
@@ -21,7 +22,6 @@ mixin input(entity, propertyName, errors = {}, showPropertyName = true)
       value=_.get(entity, propertyName, '')
     )&attributes(attributes)
     if !_.isEmpty(propertyErrors)
-      - propertyErrors.forEach((err) => - log('getLengthCount(err) %O', getLengthCount(err)))
       .invalid-feedback= propertyErrors.map((err) => err.keyword ? t(`errors.${err.keyword}`, { count: getLengthCount(err) }) : err.message).join('. ')
 
 mixin textarea(entity, propertyName, errors = {})
@@ -57,9 +57,11 @@ mixin select(entity, propertyName, errors = {}, items, multiple = false)
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - entityName = entity.constructor.name.toLowerCase()
+  - log('entity %O', entity)
+  - log('propertyName %O', propertyName)
   - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
   .form-group
-    label(for=inputId)= t(`views.${entityName}s.${propertyName}`)
+    label(for=inputId)= t(`views.${entityName}s.${propertyName in names ? names[propertyName] : propertyName}`)
     select.form-control(
         id= inputId,
         name=name,
