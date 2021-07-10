@@ -9,5 +9,5 @@ block content
     +textarea(task, 'description', errors)(type="text" rows="3")
     +select(task, 'statusId', errors, statuses)
     +select(task, 'executorId', errors, users)
-    +select(task, 'labelIds', errors, labels, true)
+    +select(task, 'labels', errors, labels, true)
     +submit(t('views.manage.submit'), false)

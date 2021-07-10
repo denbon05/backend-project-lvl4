@@ -28,7 +28,6 @@ export default (app) => {
       ]);
 
       logApp('GET tasks %O', tasks);
-      logApp('GET labels %O', labels);
 
       reply.render('tasks/index', {
         tasks,
@@ -58,10 +57,10 @@ export default (app) => {
 
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
       logApp('POST req.body.data %O', req.body.data);
-      const labelIds = req.body.data.labelIds || [];
+      const labelIds = req.body.data.labels || [];
       try {
         const taskData = await app.objection.models.task.fromJson({
-          ...omit(req.body.data, ['labelIds']),
+          ...omit(req.body.data, ['labels']),
           creatorId: req.user.id,
         });
         logApp('POST createTask taskData %O', taskData);

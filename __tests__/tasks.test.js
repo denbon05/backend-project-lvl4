@@ -55,7 +55,7 @@ describe('tasks CRUD', () => {
       payload: {
         data: {
           ...updatedTaskData,
-          labelIds: [existingLabel.id],
+          labels: [existingLabel.id],
         },
       },
     });
