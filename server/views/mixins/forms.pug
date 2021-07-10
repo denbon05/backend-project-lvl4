@@ -22,7 +22,7 @@ mixin input(entity, propertyName, errors = {}, showPropertyName = true)
     )&attributes(attributes)
     if !_.isEmpty(propertyErrors)
       - propertyErrors.forEach((err) => - log('getLengthCount(err) %O', getLengthCount(err)))
-      .invalid-feedback= propertyErrors.map((err) => t(`errors.${err.keyword}`, { count: getLengthCount(err) })).join('. ')
+      .invalid-feedback= propertyErrors.map((err) => err.keyword ? t(`errors.${err.keyword}`, { count: getLengthCount(err) }) : err.message).join('. ')
 
 mixin textarea(entity, propertyName, errors = {})
   - propertyErrors = _.get(errors, propertyName)
