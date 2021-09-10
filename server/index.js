@@ -80,8 +80,8 @@ const setUpStaticAssets = (app) => {
 const setupLocalization = () => {
   i18next
     .init({
-      lng: 'ru',
-      fallbackLng: 'en',
+      lng: 'en',
+      fallbackLng: 'ru',
       debug: false,
       resources,
       interpolation: {
