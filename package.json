@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --colors --silent",
     "prebuild": "rm -rf dist",
-    "build-db": "cp knexfile.js dist && knex migrate:latest",
+    "build-db": "cp knexfile.js dist && npx knex migrate:latest",
     "build-configs": "babel webpack.config.babel.js --out-dir dist",
     "build-server": " babel server --out-dir dist/server --source-maps inline && cp -r server/views dist/server/views",
     "build-frontend": "webpack --mode production",
