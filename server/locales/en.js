@@ -108,8 +108,11 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Hello from Hexlet!',
-          description: 'Practical programming courses',
+          hello: 'Welcome!',
+          description: `
+            Manage your tasks, assign them to the
+            teammate, track progress.
+          `,
           more: 'Learn More',
         },
       },
@@ -168,6 +171,12 @@ export default {
       name: 'Name',
       description: 'Description',
       status: 'Status',
+    },
+
+    footer: {
+      team: {
+        title: 'Team',
+      },
     },
 
     errors: {

@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "${{ env.APP_IMAGE_NAME }}:1.0"
+          tags: "${{ env.APP_IMAGE_NAME }}:1.0.1"
